@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+model Admin {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  actions      AdminAction[]
+}
+
+model Lot {
+  id            String         @id @default(uuid())
+  name          String
+  price         Decimal        @db.Decimal(10, 2)
+  startDate     DateTime
+  endDate       DateTime
+  active        Boolean        @default(true)
+  displayOrder  Int            @unique
+  quantityLimit Int?
+  quantitySold  Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  registrations Registration[]
+}
+
+model Registration {
+  id                  String        @id @default(uuid())
+  name                String
+  phone               String
+  email               String
+  graduatedFromSchool Boolean
+  graduationYear      Int?
+  lotId               String
+  lot                 Lot           @relation(fields: [lotId], references: [id])
+  amountPaid          Decimal       @db.Decimal(10, 2)
+  paymentStatus       PaymentStatus @default(PENDING)
+  proofFileKey        String        @unique
+  proofOriginalName   String
+  proofMimeType       String
+  proofSize           Int
+  submittedAt         DateTime      @default(now())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  actions             AdminAction[]
+  idempotencyKey      String?       @unique
+}
+
+model AdminAction {
+  id             String         @id @default(uuid())
+  adminId        String
+  registrationId String
+  action         String
+  previousStatus PaymentStatus?
+  newStatus      PaymentStatus?
+  createdAt      DateTime       @default(now())
+  admin          Admin          @relation(fields: [adminId], references: [id])
+  registration   Registration   @relation(fields: [registrationId], references: [id])
+}

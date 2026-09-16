@@ -1,0 +1,1 @@
+{"compilerOptions":{"target":"ES2022","useDefineForClassFields":false,"module":"ES2022","moduleResolution":"bundler","lib":["ES2022","dom"],"outDir":"./out-tsc","strict":true,"skipLibCheck":true,"types":[]},"angularCompilerOptions":{"strictTemplates":true,"strictInjectionParameters":true},"include":["src/**/*.ts"]}

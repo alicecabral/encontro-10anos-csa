@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.angular/
+.npm-cache/
+.env
+uploads/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+outputs/
+work/

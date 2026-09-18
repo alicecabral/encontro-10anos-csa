@@ -1,1 +1,1 @@
-export const environment = { api: 'encontro-10anos-csa-production.up.railway.app' };
+export const environment = { api: 'https://encontro-10anos-csa-production.up.railway.app/api' };

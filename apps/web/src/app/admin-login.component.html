@@ -1,0 +1,11 @@
+<main class="admin login">
+    <h1>Área administrativa</h1>
+    <form (ngSubmit)="go()">
+        <label>Email<input [(ngModel)]="email" name="email" type="email" /></label>
+        <label>Senha<input [(ngModel)]="password" name="password" type="password" /></label>
+        @if (error) {
+        <p class="error">{{ error }}</p>
+        }
+        <button>Entrar</button>
+    </form>
+</main>

@@ -1,0 +1,105 @@
+<main class="registration">
+    <div class="container">
+        <div class="checkout-head">
+            <div>
+                <a routerLink="/" class="back-link">← Voltar para o evento</a>
+                <div class="eyebrow checkout-eyebrow">Pagamento e confirmação</div>
+                <h1>Confirme sua presença</h1>
+                <p class="muted">
+                    Selecione um ingresso, realize o pagamento e depois envie o formulário.
+                </p>
+            </div>
+            <div class="pill">1 ingresso por pessoa</div>
+        </div>
+        @if (!success) {
+        <div class="checkout-grid">
+            <section class="card">
+                <h2>Escolha seu lote</h2>
+                <p class="muted">
+                    O lote em destaque é o atual. Os lotes futuros aparecem apenas como referência.
+                </p>
+                <div class="lot-list">
+                    @for (lot of lots; track lot.id) {
+                    <article class="lot-card" [class.current]="lot.isCurrent" [class.selected]="selected?.id === lot.id"
+                        [class.disabled]="!lot.isCurrent">
+                        <div class="lot-top">
+                            <span class="lot-name">{{ lot.name }}</span><span class="lot-price">{{ lot.price | currency:
+                                'BRL' }}</span>
+                        </div>
+                        <div class="lot-meta">
+                            {{ lot.isCurrent ? 'Disponível agora' : lot.active ? 'Em breve' : 'Encerrado' }}
+                        </div>
+                        @if (lot.isCurrent) {
+                        <span class="tag">LOTE ATUAL</span><br /><button type="button" (click)="select(lot)">
+                            {{ selected?.id === lot.id ? 'Selecionado' : 'Selecionar lote' }}
+                        </button>
+                        }
+                    </article>
+                    }
+                </div>
+                <aside class="card pix-box checkout-pix">
+                    <div class="fake-qr">QR<br />CODE</div>
+                    <strong>PIX para pagamento</strong>
+                    <div class="pix-key">
+                        <span>{{ event?.pixKey }}</span><button type="button"
+                            (click)="copy(event?.pixKey)">Copiar</button>
+                    </div>
+                    <p class="muted">Pague antes de preencher o formulário.</p>
+                </aside>
+            </section>
+            <section class="card form-card">
+                @if (selected) {
+                <h2>Dados do participante</h2>
+                <div class="notice">
+                    Depois de realizar o PIX, preencha todos os campos e anexe o comprovante.
+                </div>
+                <form [formGroup]="form" (ngSubmit)="submit()">
+                    <fieldset>
+                        <label>Nome *</label><input formControlName="name" placeholder="Nome completo" /><label>Telefone
+                            *</label><input formControlName="phone" (input)="maskPhone()"
+                            placeholder="(00) 00000-0000" /><label>Email *</label><input type="email"
+                            formControlName="email" placeholder="voce@exemplo.com" /><label>Você se formou no Santo
+                            Antônio? *</label>
+                        <div class="radio-row">
+                            <label><input type="radio" value="true"
+                                    formControlName="graduatedFromSchool" />Sim</label><label><input type="radio"
+                                    value="false" formControlName="graduatedFromSchool" />Não</label>
+                        </div>
+                        @if (form.value.graduatedFromSchool === 'true') {
+                        <label>Em qual ano você se formou? *</label><input type="number"
+                            formControlName="graduationYear" placeholder="Ex.: 2016" />
+                        }
+                        <label>Comprovante de pagamento *</label><input type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
+                            (change)="file($event)" /><small class="muted file-help">Formatos aceitos: imagens e
+                            PDF.</small>
+                        @if (error) {
+                        <p class="error">{{ error }}</p>
+                        }
+                        <button class="button full" [disabled]="sending">
+                            {{ sending ? 'Enviando…' : 'Enviar confirmação' }}
+                        </button>
+                    </fieldset>
+                </form>
+                } @else {
+                <div class="awaiting">
+                    <h2>Dados do participante</h2>
+                    <p>Selecione o lote disponível ao lado para liberar o formulário.</p>
+                </div>
+                }
+            </section>
+        </div>
+        } @else {
+        <section class="success-card">
+            <div class="success-icon">✓</div>
+            <h2>Presença confirmada!</h2>
+            <p>Seu comprovante foi recebido e sua presença no encontro está confirmada.</p>
+            <p>
+                <strong>{{ success.registration.lot.name }}</strong> ·
+                {{ success.registration.amountPaid | currency: 'BRL' }}
+            </p>
+            <a routerLink="/" class="button secondary">Voltar para o início</a>
+        </section>
+        }
+    </div>
+</main>

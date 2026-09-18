@@ -5,7 +5,9 @@ declare module 'cors' {
 }
 
 declare module 'nodemailer' {
-  interface Transporter { sendMail(message: unknown): Promise<unknown>; }
+  interface Transporter {
+    sendMail(message: unknown): Promise<unknown>;
+  }
   function createTransport(options: unknown): Transporter;
   const nodemailer: { createTransport: typeof createTransport };
   export default nodemailer;

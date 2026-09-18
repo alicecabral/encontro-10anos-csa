@@ -1,15 +1,84 @@
-import {Component,inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ReactiveFormsModule,FormBuilder,Validators} from '@angular/forms';
-import {RouterLink} from '@angular/router';
-import {Api} from './api';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { Api } from './api';
 
 @Component({
-  standalone:true,
-  imports:[CommonModule,ReactiveFormsModule,RouterLink],
-  styles:[`.checkout-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:28px}.back-link{color:var(--accent);font-weight:700}.checkout-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:22px;align-items:start}.lot-list{display:grid;gap:10px;margin-top:18px}.lot-card{position:relative;padding:16px;border:1px solid var(--border);border-radius:12px;background:#fff;cursor:default}.lot-card.current{border:2px solid var(--accent)}.lot-card.selected{background:#eff6ff;border-color:var(--accent)}.lot-card.disabled{opacity:.52}.lot-top{display:flex;justify-content:space-between;gap:14px}.lot-name,.lot-price{font-weight:800}.lot-meta{margin-top:4px;font-size:.86rem;color:var(--secondary)}.tag{display:inline-block;margin-top:10px;padding:4px 8px;border-radius:5px;background:#dbeafe;color:#1e40af;font-size:.75rem;font-weight:800}.lot-card button{margin-top:12px;border:0;border-radius:7px;background:var(--accent);color:white;padding:8px 11px;font-weight:700}.checkout-pix{margin-top:18px;box-shadow:none}.checkout-pix .fake-qr{width:120px;height:120px}.form-card h2{margin-top:0}.notice{margin:16px 0;padding:13px 14px;border-radius:9px;background:var(--warning-bg);color:var(--warning);font-size:.9rem}.form-card form{max-width:none;padding:0;border:0;box-shadow:none}.form-card fieldset{display:block}.form-card label{display:block;margin:15px 0 6px}.form-card fieldset label{font-weight:400}.radio-row{display:flex;gap:18px}.radio-row label{display:flex;align-items:center;gap:7px}.radio-row input{width:auto;min-height:auto}.file-help{font-size:.82rem}.awaiting{padding:26px 0;color:var(--secondary);text-align:center}.success-card{padding:28px;border-radius:var(--radius);background:var(--success-bg);color:var(--success);text-align:center}@media(max-width:780px){.checkout-grid{grid-template-columns:1fr}.checkout-head{flex-direction:column}}`],
-  template:`<main class="registration"><div class="container"><div class="checkout-head"><div><a routerLink="/" class="back-link">← Voltar para o evento</a><div class="eyebrow checkout-eyebrow">Pagamento e confirmação</div><h1>Confirme sua presença</h1><p class="muted">Selecione um ingresso, realize o pagamento e depois envie o formulário.</p></div><div class="pill">1 ingresso por pessoa</div></div>
-  @if(!success){<div class="checkout-grid"><section class="card"><h2>Escolha seu lote</h2><p class="muted">O lote em destaque é o atual. Os lotes futuros aparecem apenas como referência.</p><div class="lot-list">@for(lot of lots;track lot.id){<article class="lot-card" [class.current]="lot.isCurrent" [class.selected]="selected?.id===lot.id" [class.disabled]="!lot.isCurrent"><div class="lot-top"><span class="lot-name">{{lot.name}}</span><span class="lot-price">{{lot.price|currency:'BRL'}}</span></div><div class="lot-meta">{{lot.isCurrent?'Disponível agora':lot.active?'Em breve':'Encerrado'}}</div>@if(lot.isCurrent){<span class="tag">LOTE ATUAL</span><br><button type="button" (click)="select(lot)">{{selected?.id===lot.id?'Selecionado':'Selecionar lote'}}</button>}</article>}</div><aside class="card pix-box checkout-pix"><div class="fake-qr">QR<br>CODE</div><strong>PIX para pagamento</strong><div class="pix-key"><span>{{event?.pixKey}}</span><button type="button" (click)="copy(event?.pixKey)">Copiar</button></div><p class="muted">Pague antes de preencher o formulário.</p></aside></section>
-  <section class="card form-card">@if(selected){<h2>Dados do participante</h2><div class="notice">Depois de realizar o PIX, preencha todos os campos e anexe o comprovante.</div><form [formGroup]="form" (ngSubmit)="submit()"><fieldset><label>Nome *</label><input formControlName="name" placeholder="Nome completo"><label>Telefone *</label><input formControlName="phone" (input)="maskPhone()" placeholder="(00) 00000-0000"><label>Email *</label><input type="email" formControlName="email" placeholder="voce@exemplo.com"><label>Você se formou no Santo Antônio? *</label><div class="radio-row"><label><input type="radio" value="true" formControlName="graduatedFromSchool">Sim</label><label><input type="radio" value="false" formControlName="graduatedFromSchool">Não</label></div>@if(form.value.graduatedFromSchool==='true'){<label>Em qual ano você se formou? *</label><input type="number" formControlName="graduationYear" placeholder="Ex.: 2016">}<label>Comprovante de pagamento *</label><input type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" (change)="file($event)"><small class="muted file-help">Formatos aceitos: imagens e PDF.</small>@if(error){<p class="error">{{error}}</p>}<button class="button full" [disabled]="sending">{{sending?'Enviando…':'Enviar confirmação'}}</button></fieldset></form>}@else{<div class="awaiting"><h2>Dados do participante</h2><p>Selecione o lote disponível ao lado para liberar o formulário.</p></div>}</section></div>}@else{<section class="success-card"><div class="success-icon">✓</div><h2>Presença confirmada!</h2><p>Seu comprovante foi recebido e sua presença no encontro está confirmada.</p><p><strong>{{success.registration.lot.name}}</strong> · {{success.registration.amountPaid|currency:'BRL'}}</p><a routerLink="/" class="button secondary">Voltar para o início</a></section>}</div></main>`
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  templateUrl: './registration.component.html',
+  styleUrls: ['./registration.component.scss'],
 })
-export class RegistrationComponent{api=inject(Api);fb=inject(FormBuilder);lots:any[]=[];event:any;selected:any;proof?:File;sending=false;error='';success:any;form=this.fb.group({name:['',[Validators.required,Validators.minLength(3)]],phone:['',Validators.required],email:['',[Validators.required,Validators.email]],graduatedFromSchool:['',Validators.required],graduationYear:['']});constructor(){this.api.lots().subscribe(x=>{this.lots=x;this.selected=x.find(lot=>lot.isCurrent);});this.api.event().subscribe(x=>this.event=x);this.form.get('graduatedFromSchool')!.valueChanges.subscribe(value=>{const year=this.form.get('graduationYear')!;value==='true'?year.setValidators([Validators.required,Validators.min(1900)]):year.clearValidators();year.updateValueAndValidity()})}select(lot:any){this.selected=lot;this.error=''}file(event:Event){this.proof=(event.target as HTMLInputElement).files?.[0]}maskPhone(){let value=this.form.value.phone!.replace(/\D/g,'').slice(0,11);if(value.length>6)value=value.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');else if(value.length>2)value=value.replace(/(\d{2})(.*)/,'($1) $2');this.form.patchValue({phone:value},{emitEvent:false})}copy(value?:string){if(value)navigator.clipboard.writeText(value);alert('Chave PIX copiada!')}submit(){if(this.form.invalid||!this.proof){this.error='Preencha todos os campos obrigatórios e anexe o comprovante.';return}this.sending=true;this.error='';const data=new FormData();Object.entries(this.form.value).forEach(([key,value])=>data.append(key,value||''));data.append('lotId',this.selected.id);data.append('proof',this.proof);this.api.register(data,crypto.randomUUID()).subscribe({next:result=>{this.success=result;this.sending=false},error:response=>{this.error=response.error?.message||'Não foi possível enviar o comprovante. Tente novamente.';this.sending=false}})}}
+export class RegistrationComponent {
+  api = inject(Api);
+  fb = inject(FormBuilder);
+  lots: any[] = [];
+  event: any;
+  selected: any;
+  proof?: File;
+  sending = false;
+  error = '';
+  success: any;
+  form = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    phone: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    graduatedFromSchool: ['', Validators.required],
+    graduationYear: [''],
+  });
+  constructor() {
+    this.api.lots().subscribe((x) => {
+      this.lots = x;
+      this.selected = x.find((lot) => lot.isCurrent);
+    });
+    this.api.event().subscribe((x) => (this.event = x));
+    this.form.get('graduatedFromSchool')!.valueChanges.subscribe((value) => {
+      const year = this.form.get('graduationYear')!;
+      value === 'true'
+        ? year.setValidators([Validators.required, Validators.min(1900)])
+        : year.clearValidators();
+      year.updateValueAndValidity();
+    });
+  }
+  select(lot: any) {
+    this.selected = lot;
+    this.error = '';
+  }
+  file(event: Event) {
+    this.proof = (event.target as HTMLInputElement).files?.[0];
+  }
+  maskPhone() {
+    let value = this.form.value.phone!.replace(/\D/g, '').slice(0, 11);
+    if (value.length > 6) value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    else if (value.length > 2) value = value.replace(/(\d{2})(.*)/, '($1) $2');
+    this.form.patchValue({ phone: value }, { emitEvent: false });
+  }
+  copy(value?: string) {
+    if (value) navigator.clipboard.writeText(value);
+    alert('Chave PIX copiada!');
+  }
+  submit() {
+    if (this.form.invalid || !this.proof) {
+      this.error = 'Preencha todos os campos obrigatórios e anexe o comprovante.';
+      return;
+    }
+    this.sending = true;
+    this.error = '';
+    const data = new FormData();
+    Object.entries(this.form.value).forEach(([key, value]) => data.append(key, value || ''));
+    data.append('lotId', this.selected.id);
+    data.append('proof', this.proof);
+    this.api.register(data, crypto.randomUUID()).subscribe({
+      next: (result) => {
+        this.success = result;
+        this.sending = false;
+      },
+      error: (response) => {
+        this.error =
+          response.error?.message || 'Não foi possível enviar o comprovante. Tente novamente.';
+        this.sending = false;
+      },
+    });
+  }
+}

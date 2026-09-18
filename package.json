@@ -1,6 +1,18 @@
 {
   "name": "encontro-10-anos",
   "private": true,
-  "workspaces": ["apps/*"],
-  "scripts": {"dev:api":"npm run dev -w @encontro/api","dev:web":"npm start -w @encontro/web","test":"npm test --workspaces --if-present","build":"npm run build --workspaces --if-present"}
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @encontro/api",
+    "dev:web": "npm start -w @encontro/web",
+    "test": "npm test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.8"
+  }
 }

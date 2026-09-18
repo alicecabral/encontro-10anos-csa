@@ -199,8 +199,8 @@ app.post('/api/admin/login', async (req, res, next) => {
         jwt.sign({ id: admin.id, email: admin.email }, env.JWT_SECRET, { expiresIn: '8h' }),
         {
           httpOnly: true,
-          sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'none',
+          secure: true,
           maxAge: 288e5,
         },
       )

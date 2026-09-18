@@ -1,15 +1,17 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+
 const prisma = new PrismaClient();
 const now = new Date();
+const email = (process.env.ADMIN_EMAIL || 'admin@example.com').toLowerCase();
+const password = process.env.ADMIN_PASSWORD || 'change-me-in-development';
+const passwordHash = await bcrypt.hash(password, 12);
+
 await prisma.admin.upsert({
-  where: { email: process.env.ADMIN_EMAIL || 'admin@example.com' },
-  update: {},
-  create: {
-    email: process.env.ADMIN_EMAIL || 'admin@example.com',
-    passwordHash: await bcrypt.hash(process.env.ADMIN_PASSWORD || 'change-me-in-development', 12),
-  },
+  where: { email },
+  update: { passwordHash },
+  create: { email, passwordHash },
 });
 const years = [
   [-30, 30],

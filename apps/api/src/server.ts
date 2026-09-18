@@ -31,6 +31,15 @@ const safeTypes = new Set([
   'image/gif',
   'application/pdf',
 ]);
+const ensureAdminAccount = async () => {
+  const email = env.ADMIN_EMAIL.toLowerCase();
+  const passwordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 12);
+  await prisma.admin.upsert({
+    where: { email },
+    update: { passwordHash },
+    create: { email, passwordHash },
+  });
+};
 const r2 =
   env.R2_ENDPOINT && env.R2_BUCKET_NAME
     ? new S3Client({
@@ -130,12 +139,10 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
       return res.status(400).json({ message: 'Informe um ano de formação válido.' });
     const lot = await prisma.lot.findUnique({ where: { id: data.lotId } });
     if (!lot || !available(lot))
-      return res
-        .status(409)
-        .json({
-          message:
-            'Este lote não está mais disponível. Atualize a página para consultar o lote atual.',
-        });
+      return res.status(409).json({
+        message:
+          'Este lote não está mais disponível. Atualize a página para consultar o lote atual.',
+      });
     key = `event-proofs/${new Date().getFullYear()}/${crypto.randomUUID()}${path.extname(req.file.originalname).toLowerCase()}`;
     await putFile(key, req.file);
     const idempotencyKey = req.header('Idempotency-Key') || undefined;
@@ -168,12 +175,10 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
       await tx.lot.update({ where: { id: lot.id }, data: { quantitySold: { increment: 1 } } });
       return created;
     });
-    res
-      .status(201)
-      .json({
-        registration: serialize(registration),
-        message: 'Sua presença foi confirmada e o comprovante foi recebido!',
-      });
+    res.status(201).json({
+      registration: serialize(registration),
+      message: 'Sua presença foi confirmada e o comprovante foi recebido!',
+    });
   } catch (error) {
     if (key) await deleteFile(key);
     next(error);
@@ -323,22 +328,27 @@ app.get('/api/admin/registrations/:id/proof', auth, async (req, res, next) => {
 });
 app.use((error: any, _req: any, res: any, _next: any) => {
   if (error instanceof multer.MulterError)
-    return res
-      .status(400)
-      .json({
-        message:
-          error.code === 'LIMIT_FILE_SIZE'
-            ? 'O arquivo excede o tamanho permitido.'
-            : 'Erro no envio do arquivo.',
-      });
+    return res.status(400).json({
+      message:
+        error.code === 'LIMIT_FILE_SIZE'
+          ? 'O arquivo excede o tamanho permitido.'
+          : 'Erro no envio do arquivo.',
+    });
   if (error instanceof z.ZodError)
-    return res
-      .status(400)
-      .json({
-        message: 'Preencha os campos obrigatórios com dados válidos.',
-        errors: error.flatten(),
-      });
+    return res.status(400).json({
+      message: 'Preencha os campos obrigatórios com dados válidos.',
+      errors: error.flatten(),
+    });
   console.error(error);
   res.status(500).json({ message: 'Não foi possível concluir a solicitação. Tente novamente.' });
 });
-app.listen(env.PORT, () => console.log(`API em http://localhost:${env.PORT}`));
+
+const start = async () => {
+  await ensureAdminAccount();
+  app.listen(env.PORT, () => console.log(`API em http://localhost:${env.PORT}`));
+};
+
+start().catch((error) => {
+  console.error('Erro ao iniciar a API:', error);
+  process.exit(1);
+});

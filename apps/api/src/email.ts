@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import env from './config.js';
 import { eventConfig } from './event.js';
+import { formatMoneyBRL } from './money.js';
 
 /** Optional, deliberately non-blocking email delivery service. */
 export async function sendRegistrationEmail(registration: {
@@ -20,6 +21,6 @@ export async function sendRegistrationEmail(registration: {
     from: env.EMAIL_FROM,
     to: registration.email,
     subject: `Inscrição registrada — ${eventConfig.eventName}`,
-    text: `Olá, ${registration.name}!\n\nSua inscrição para ${eventConfig.eventName} foi registrada.\nLote: ${registration.lot.name}\nValor: R$ ${registration.amountPaid.toFixed(2)}\n\nSeu comprovante será conferido pela organização.`,
+    text: `Olá, ${registration.name}!\n\nSua inscrição para ${eventConfig.eventName} foi registrada.\nLote: ${registration.lot.name}\nValor: ${formatMoneyBRL(registration.amountPaid)}\n\nSeu comprovante será conferido pela organização.`,
   });
 }

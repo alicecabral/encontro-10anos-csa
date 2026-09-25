@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,7 +10,7 @@ import { Api } from './api';
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.scss'],
 })
-export class RegistrationComponent {
+export class RegistrationComponent implements OnInit {
   api = inject(Api);
   fb = inject(FormBuilder);
   lots: any[] = [];
@@ -20,6 +20,9 @@ export class RegistrationComponent {
   sending = false;
   error = '';
   success: any;
+  pixCopied = false;
+  showValidationErrors = false;
+  soldOut = false;
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     phone: ['', Validators.required],
@@ -27,9 +30,12 @@ export class RegistrationComponent {
     graduatedFromSchool: ['', Validators.required],
     graduationYear: [''],
   });
-  constructor() {
+  ngOnInit() {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     this.api.lots().subscribe((x) => {
       this.lots = x;
+      const totalSold = x.reduce((sum, lot) => sum + (lot.quantitySold || 0), 0);
+      this.soldOut = totalSold >= 6;
       this.selected = x.find((lot) => lot.isCurrent);
     });
     this.api.event().subscribe((x) => (this.event = x));
@@ -40,6 +46,10 @@ export class RegistrationComponent {
         : year.clearValidators();
       year.updateValueAndValidity();
     });
+  }
+
+  constructor() {
+    // intentionally empty: initialization is handled in ngOnInit
   }
   select(lot: any) {
     this.selected = lot;
@@ -56,11 +66,19 @@ export class RegistrationComponent {
   }
   copy(value?: string) {
     if (value) navigator.clipboard.writeText(value);
-    alert('Chave PIX copiada!');
+    this.pixCopied = true;
+  }
+  isFieldInvalid(controlName: string) {
+    return this.showValidationErrors && this.form.get(controlName)?.invalid;
+  }
+  isFileInvalid() {
+    return this.showValidationErrors && !this.proof;
   }
   submit() {
+    this.showValidationErrors = true;
+    this.form.markAllAsTouched();
     if (this.form.invalid || !this.proof) {
-      this.error = 'Preencha todos os campos obrigatórios e anexe o comprovante.';
+      this.error = 'Preencha corretamente todos os campos obrigatórios.';
       return;
     }
     this.sending = true;

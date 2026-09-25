@@ -20,7 +20,7 @@
         </article>
         <article>
             <span>Vagas para próximo lote</span>
-            <b>{{ dashboard.spotsUntilNextLot === null ? 'Sem limite' : dashboard.spotsUntilNextLot }}</b>
+            <b>{{ dashboard.spotsUntilNextLot ?? 0 }}</b>
         </article>
     </div>
     }

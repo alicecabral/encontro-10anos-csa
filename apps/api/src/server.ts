@@ -70,11 +70,25 @@ const auth = (req: any, res: any, next: any) => {
     res.status(401).json({ message: 'Autenticação necessária.' });
   }
 };
-const available = (lot: any) =>
-  lot.active &&
-  new Date() >= lot.startDate &&
-  new Date() <= lot.endDate &&
-  (lot.quantityLimit === null || lot.quantitySold < lot.quantityLimit);
+const TOTAL_TICKET_LIMIT = 6;
+const LOT_CAPACITY = 2;
+const isLotAvailableByRelease = (lot: any, totalSold: number) => {
+  const lotLimit = lot.quantityLimit ?? LOT_CAPACITY;
+  if (!lot.active || lot.quantitySold >= lotLimit) return false;
+  if (totalSold >= TOTAL_TICKET_LIMIT) return false;
+
+  if (lot.displayOrder === 1) return totalSold < 2;
+  if (lot.displayOrder === 2) return totalSold >= 2 && totalSold < 4;
+  if (lot.displayOrder === 3) return totalSold >= 4 && totalSold < 6;
+  return false;
+};
+const getSpotsUntilNextLot = (lots: any[], totalSold: number) => {
+  if (totalSold >= TOTAL_TICKET_LIMIT) return 0;
+  const currentLot = lots.find((lot) => isLotAvailableByRelease(lot, totalSold));
+  if (!currentLot) return 0;
+  const nextThreshold = currentLot.displayOrder * LOT_CAPACITY;
+  return Math.max(0, nextThreshold - totalSold);
+};
 const serialize = (registration: any) => ({
   ...registration,
   amountPaid: Number(registration.amountPaid),
@@ -103,17 +117,21 @@ async function deleteFile(key: string) {
 }
 
 app.get('/api/event', (_, res) => res.json(eventConfig));
-app.get('/api/lots', async (_, res) =>
+app.get('/api/lots', async (_, res) => {
+  const lots = await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } });
+  const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
   res.json(
-    (await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } })).map((lot) => ({
+    lots.map((lot) => ({
       ...lot,
       price: Number(lot.price),
-      isCurrent: available(lot),
+      isCurrent: isLotAvailableByRelease(lot, totalSold),
     })),
-  ),
-);
+  );
+});
 app.get('/api/lots/current', async (_, res) => {
-  const lot = (await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } })).find(available);
+  const lots = await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } });
+  const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
+  const lot = lots.find((entry) => isLotAvailableByRelease(entry, totalSold));
   if (!lot)
     return res.status(404).json({ message: 'No momento não há lotes disponíveis para compra.' });
   res.json({ ...lot, price: Number(lot.price) });
@@ -135,10 +153,16 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
       return res.status(400).json({ message: 'Envie um comprovante válido (imagem ou PDF).' });
     const graduated = data.graduatedFromSchool === 'true';
     const year = graduated ? Number(data.graduationYear) : null;
-    if (graduated && (!Number.isInteger(year) || year! < 1900 || year! > new Date().getFullYear()))
+    if (graduated && (!Number.isInteger(year) || year! < 2000 || year! > new Date().getFullYear()))
       return res.status(400).json({ message: 'Informe um ano de formação válido.' });
+    const lots = await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } });
+    const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
+    if (totalSold >= TOTAL_TICKET_LIMIT)
+      return res.status(409).json({
+        message: 'As inscrições para este evento já esgotaram.',
+      });
     const lot = await prisma.lot.findUnique({ where: { id: data.lotId } });
-    if (!lot || !available(lot))
+    if (!lot || !isLotAvailableByRelease(lot, totalSold))
       return res.status(409).json({
         message:
           'Este lote não está mais disponível. Atualize a página para consultar o lote atual.',
@@ -220,12 +244,9 @@ app.get('/api/admin/dashboard', auth, async (_, res) => {
     prisma.registration.aggregate({ _sum: { amountPaid: true } }),
     prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } }),
   ]);
-  const currentLot = lots.find(available);
-  const spotsUntilNextLot = currentLot
-    ? currentLot.quantityLimit === null
-      ? null
-      : Math.max(0, currentLot.quantityLimit - currentLot.quantitySold)
-    : null;
+  const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
+  const currentLot = lots.find((lot) => isLotAvailableByRelease(lot, totalSold));
+  const spotsUntilNextLot = getSpotsUntilNextLot(lots, totalSold);
   res.json({
     confirmed,
     revenue: Number(revenue._sum.amountPaid || 0),

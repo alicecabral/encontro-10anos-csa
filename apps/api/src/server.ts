@@ -21,6 +21,14 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import env from './config.js';
 import { eventConfig } from './event.js';
+import { sendReviewConfirmationEmail } from './email.js';
+import {
+  LOT_CAPACITIES,
+  TOTAL_TICKET_LIMIT,
+  getLotCapacity,
+  graduationYearFromClassOf2016Answer,
+  isLotAvailableByRelease,
+} from './rules.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -70,23 +78,15 @@ const auth = (req: any, res: any, next: any) => {
     res.status(401).json({ message: 'Autenticação necessária.' });
   }
 };
-const TOTAL_TICKET_LIMIT = 6;
-const LOT_CAPACITY = 2;
-const isLotAvailableByRelease = (lot: any, totalSold: number) => {
-  const lotLimit = lot.quantityLimit ?? LOT_CAPACITY;
-  if (!lot.active || lot.quantitySold >= lotLimit) return false;
-  if (totalSold >= TOTAL_TICKET_LIMIT) return false;
-
-  if (lot.displayOrder === 1) return totalSold < 2;
-  if (lot.displayOrder === 2) return totalSold >= 2 && totalSold < 4;
-  if (lot.displayOrder === 3) return totalSold >= 4 && totalSold < 6;
-  return false;
-};
 const getSpotsUntilNextLot = (lots: any[], totalSold: number) => {
   if (totalSold >= TOTAL_TICKET_LIMIT) return 0;
   const currentLot = lots.find((lot) => isLotAvailableByRelease(lot, totalSold));
   if (!currentLot) return 0;
-  const nextThreshold = currentLot.displayOrder * LOT_CAPACITY;
+
+  const nextThreshold = LOT_CAPACITIES.slice(0, currentLot.displayOrder).reduce(
+    (sum, capacity) => sum + capacity,
+    0,
+  );
   return Math.max(0, nextThreshold - totalSold);
 };
 const serialize = (registration: any) => ({
@@ -145,16 +145,12 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
         phone: z.string().min(10).max(20),
         email: z.string().trim().email().max(254),
         graduatedFromSchool: z.enum(['true', 'false']),
-        graduationYear: z.string().optional(),
         lotId: z.string().uuid(),
       })
       .parse(req.body);
     if (!req.file || !safeTypes.has(req.file.mimetype))
       return res.status(400).json({ message: 'Envie um comprovante válido (imagem ou PDF).' });
     const graduated = data.graduatedFromSchool === 'true';
-    const year = graduated ? Number(data.graduationYear) : null;
-    if (graduated && (!Number.isInteger(year) || year! < 2000 || year! > new Date().getFullYear()))
-      return res.status(400).json({ message: 'Informe um ano de formação válido.' });
     const lots = await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } });
     const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
     if (totalSold >= TOTAL_TICKET_LIMIT)
@@ -184,7 +180,7 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
           phone: data.phone.replace(/\D/g, ''),
           email: data.email.toLowerCase(),
           graduatedFromSchool: graduated,
-          graduationYear: year,
+          graduationYear: graduationYearFromClassOf2016Answer(graduated),
           lotId: lot.id,
           amountPaid: lot.price,
           paymentStatus: 'CONFIRMED',
@@ -239,9 +235,13 @@ app.post('/api/admin/logout', (_, res) => {
 });
 app.get('/api/admin/me', auth, (req: any, res) => res.json({ email: req.admin.email }));
 app.get('/api/admin/dashboard', auth, async (_, res) => {
-  const [confirmed, revenue, lots] = await Promise.all([
-    prisma.registration.count(),
-    prisma.registration.aggregate({ _sum: { amountPaid: true } }),
+  const [confirmed, pending, revenue, lots] = await Promise.all([
+    prisma.registration.count({ where: { reviewStatus: 'CONFIRMED' } }),
+    prisma.registration.count({ where: { reviewStatus: 'PENDING' } }),
+    prisma.registration.aggregate({
+      where: { reviewStatus: { not: 'REJECTED' } },
+      _sum: { amountPaid: true },
+    }),
     prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } }),
   ]);
   const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
@@ -249,6 +249,7 @@ app.get('/api/admin/dashboard', auth, async (_, res) => {
   const spotsUntilNextLot = getSpotsUntilNextLot(lots, totalSold);
   res.json({
     confirmed,
+    pending,
     revenue: Number(revenue._sum.amountPaid || 0),
     currentLot: currentLot ? { name: currentLot.name, price: Number(currentLot.price) } : null,
     spotsUntilNextLot,
@@ -285,6 +286,41 @@ app.get('/api/admin/registrations', auth, async (req, res) => {
   ]);
   res.json({ items: items.map(serialize), total, page, limit });
 });
+app.patch('/api/admin/registrations/:id/review', auth, async (req, res, next) => {
+  try {
+    const { status } = z.object({ status: z.enum(['CONFIRMED', 'REJECTED']) }).parse(req.body);
+    const result = await prisma.$transaction(async (tx) => {
+      const changed = await tx.registration.updateMany({
+        where: { id: req.params.id, reviewStatus: 'PENDING' },
+        data: { reviewStatus: status },
+      });
+      const registration = await tx.registration.findUnique({ where: { id: req.params.id } });
+
+      if (changed.count && status === 'REJECTED' && registration) {
+        await tx.lot.update({
+          where: { id: registration.lotId },
+          data: { quantitySold: { decrement: 1 } },
+        });
+      }
+
+      return { registration, changed: changed.count > 0 };
+    });
+
+    if (!result.registration) return res.status(404).json({ message: 'Inscrição não encontrada.' });
+    if (!result.changed && result.registration.reviewStatus !== status)
+      return res.status(409).json({ message: 'Esta inscrição já foi analisada.' });
+
+    if (result.changed && status === 'CONFIRMED') {
+      void sendReviewConfirmationEmail(result.registration).catch((error) => {
+        console.error('Não foi possível enviar o e-mail de confirmação do comprovante:', error);
+      });
+    }
+
+    res.json({ id: result.registration.id, reviewStatus: result.registration.reviewStatus });
+  } catch (error) {
+    next(error);
+  }
+});
 app.get('/api/admin/registrations/export', auth, async (_, res) => {
   const rows = await prisma.registration.findMany({
     include: { lot: true },
@@ -300,8 +336,7 @@ app.get('/api/admin/registrations/export', auth, async (_, res) => {
           row.name,
           row.phone,
           row.email,
-          row.graduatedFromSchool ? 'Sim' : 'Não',
-          row.graduationYear || '',
+          row.graduatedFromSchool && row.graduationYear === 2016 ? 'Sim' : 'Não',
           row.lot.name,
           Number(row.amountPaid),
           row.submittedAt.toISOString(),
@@ -313,8 +348,7 @@ app.get('/api/admin/registrations/export', auth, async (_, res) => {
             'Nome',
             'Telefone',
             'Email',
-            'Formado no Santo Antônio',
-            'Ano de formação',
+            'É do terceiro ano 2016?',
             'Lote',
             'Valor pago',
             'Data de submissão',
@@ -366,7 +400,14 @@ app.use((error: any, _req: any, res: any, _next: any) => {
 
 const start = async () => {
   await ensureAdminAccount();
-  app.listen(env.PORT, () => console.log(`API em http://localhost:${env.PORT}`));
+  app.listen(env.PORT, () => {
+    console.log(`API em http://localhost:${env.PORT}`);
+    console.log(
+      r2
+        ? `Armazenamento R2 ativo: ${env.R2_BUCKET_NAME}`
+        : 'Armazenamento local ativo (R2 não configurado).',
+    );
+  });
 };
 
 start().catch((error) => {

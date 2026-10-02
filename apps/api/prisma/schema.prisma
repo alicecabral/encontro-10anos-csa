@@ -13,6 +13,12 @@ enum PaymentStatus {
   REJECTED
 }
 
+enum ReviewStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
 model Admin {
   id           String        @id @default(uuid())
   email        String        @unique
@@ -48,6 +54,7 @@ model Registration {
   lot                 Lot           @relation(fields: [lotId], references: [id])
   amountPaid          Decimal       @db.Decimal(10, 2)
   paymentStatus       PaymentStatus @default(PENDING)
+  reviewStatus        ReviewStatus  @default(PENDING)
   proofFileKey        String        @unique
   proofOriginalName   String
   proofMimeType       String

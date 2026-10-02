@@ -11,6 +11,8 @@ import { Api } from './api';
   styleUrls: ['./registration.component.scss'],
 })
 export class RegistrationComponent implements OnInit {
+  private readonly TOTAL_TICKET_LIMIT = 123;
+
   api = inject(Api);
   fb = inject(FormBuilder);
   lots: any[] = [];
@@ -24,28 +26,27 @@ export class RegistrationComponent implements OnInit {
   showValidationErrors = false;
   soldOut = false;
   form = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
     phone: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     graduatedFromSchool: ['', Validators.required],
-    graduationYear: [''],
   });
+  getLotCapacity(lot: any) {
+    return lot?.quantityLimit ?? 0;
+  }
+  getRemainingSpots(lot: any) {
+    return Math.max(0, this.getLotCapacity(lot) - (lot?.quantitySold ?? 0));
+  }
   ngOnInit() {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     this.api.lots().subscribe((x) => {
       this.lots = x;
       const totalSold = x.reduce((sum, lot) => sum + (lot.quantitySold || 0), 0);
-      this.soldOut = totalSold >= 6;
-      this.selected = x.find((lot) => lot.isCurrent);
+      this.soldOut = totalSold >= this.TOTAL_TICKET_LIMIT;
+      this.selected = x.find((lot) => lot.isCurrent) ?? x[0] ?? null;
     });
     this.api.event().subscribe((x) => (this.event = x));
-    this.form.get('graduatedFromSchool')!.valueChanges.subscribe((value) => {
-      const year = this.form.get('graduationYear')!;
-      value === 'true'
-        ? year.setValidators([Validators.required, Validators.min(1900)])
-        : year.clearValidators();
-      year.updateValueAndValidity();
-    });
   }
 
   constructor() {
@@ -84,7 +85,10 @@ export class RegistrationComponent implements OnInit {
     this.sending = true;
     this.error = '';
     const data = new FormData();
-    Object.entries(this.form.value).forEach(([key, value]) => data.append(key, value || ''));
+    Object.entries(this.form.value).forEach(([key, value]) => {
+      if (key !== 'firstName' && key !== 'lastName') data.append(key, value || '');
+    });
+    data.append('name', `${this.form.value.firstName} ${this.form.value.lastName}`.trim());
     data.append('lotId', this.selected.id);
     data.append('proof', this.proof);
     this.api.register(data, crypto.randomUUID()).subscribe({

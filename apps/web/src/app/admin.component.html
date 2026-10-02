@@ -7,10 +7,16 @@
         </div>
         <a class="button secondary" href="http://localhost:3000/api/admin/registrations/export">Exportar CSV</a>
     </div>
+    @if (reviewError) {
+    <p class="error" role="alert">{{ reviewError }}</p>
+    }
     @if (dashboard) {
     <div class="stats">
         <article>
             <span>Confirmados</span><b>{{ dashboard.confirmed }}</b>
+        </article>
+        <article>
+            <span>Pendentes</span><b>{{ dashboard.pending }}</b>
         </article>
         <article>
             <span>Arrecadado</span><b>{{ dashboard.revenue | currency: 'BRL' }}</b>
@@ -30,31 +36,72 @@
                 <tr>
                     <th>Nome</th>
                     <th>Contato</th>
-                    <th>Ano Santo Antônio</th>
+                    <th>É do terceiro ano 2016?</th>
                     <th>Lote</th>
                     <th>Valor pago</th>
                     <th>Comprovante</th>
                     <th>Submissão</th>
+                    <th>Análise do comprovante</th>
                 </tr>
             </thead>
             <tbody>
                 @for (r of registrations; track r.id) {
-                <tr [style.background-color]="r.graduatedFromSchool ? '' : '#fef2f2'"
-                    [style.color]="r.graduatedFromSchool ? '' : '#991b1b'">
+                <tr [class.review-confirmed]="r.reviewStatus === 'CONFIRMED'"
+                    [class.review-rejected]="r.reviewStatus === 'REJECTED'">
                     <td>
                         <strong>{{ r.name }}</strong>
                     </td>
                     <td>
                         {{ r.phone }}<br /><span>{{ r.email }}</span>
                     </td>
-                    <td>{{ r.graduatedFromSchool ? r.graduationYear : 'Não se formou' }}</td>
+                    <td>{{ r.graduatedFromSchool && r.graduationYear === 2016 ? 'Sim' : 'Não' }}</td>
                     <td>{{ r.lot.name }}</td>
                     <td>{{ r.amountPaid | currency: 'BRL' }}</td>
                     <td><button (click)="openProof(r.id)">Ver comprovante</button></td>
                     <td>{{ r.submittedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                    <td class="review-cell">
+                        @if (r.reviewStatus === 'PENDING') {
+                        <div class="review-actions">
+                            <button class="review-button confirm" type="button" title="Confirmar comprovante"
+                                aria-label="Confirmar comprovante" [disabled]="updatingRegistrationIds.has(r.id)"
+                                (click)="requestReviewConfirmation(r, 'CONFIRMED')">✓</button>
+                            <button class="review-button reject" type="button" title="Recusar comprovante"
+                                aria-label="Recusar comprovante" [disabled]="updatingRegistrationIds.has(r.id)"
+                                (click)="requestReviewConfirmation(r, 'REJECTED')">✕</button>
+                            @if (!(r.graduatedFromSchool && r.graduationYear === 2016)) {
+                            <span class="participant-warning" role="img"
+                                aria-label="Atenção: participante não é do terceiro ano de 2016"
+                                title="Participante não é do terceiro ano de 2016">⚠</span>
+                            }
+                        </div>
+                        } @else if (r.reviewStatus === 'CONFIRMED') {
+                        <span class="review-label confirmed-label">✓ Confirmado</span>
+                        } @else {
+                        <span class="review-label rejected-label">✕ Recusado</span>
+                        }
+                    </td>
                 </tr>
                 }
             </tbody>
         </table>
     </div>
+    @if (reviewConfirmation) {
+    <div class="review-dialog-backdrop" (click)="cancelReviewConfirmation()"
+        (keydown.escape)="cancelReviewConfirmation()">
+        <section class="review-dialog" role="dialog" aria-modal="true" aria-labelledby="review-dialog-title"
+            (click)="$event.stopPropagation()" (keydown.escape)="cancelReviewConfirmation()">
+            <h2 id="review-dialog-title">Revisar comprovante</h2>
+            @if (reviewConfirmation.status === 'CONFIRMED') {
+            <p>Deseja confirmar a presença de {{ reviewConfirmation.name }} na festa?</p>
+            } @else {
+            <p>Deseja rejeitar o comprovante de {{ reviewConfirmation.name }}?</p>
+            }
+            <div class="review-dialog-actions">
+                <button class="review-dialog-cancel" type="button" autofocus
+                    (click)="cancelReviewConfirmation()">Cancelar</button>
+                <button class="review-dialog-confirm" type="button" (click)="confirmReview()">Sim</button>
+            </div>
+        </section>
+    </div>
+    }
 </main>

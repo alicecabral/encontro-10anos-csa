@@ -10,7 +10,7 @@ h1 {
 }
 
 .back-link {
-    color: var(--accent);
+    color: var(--warning);
     font-weight: 700;
 }
 
@@ -32,17 +32,17 @@ h1 {
     padding: 16px;
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: #fff;
+    background: linear-gradient(180deg, rgba(13, 24, 48, 0.96) 0%, rgba(9, 20, 38, 0.98) 100%);
     cursor: default;
 }
 
 .lot-card.current {
-    border: 2px solid var(--accent);
+    border: 2px solid var(--warning);
 }
 
 .lot-card.selected {
-    background: #eff6ff;
-    border-color: var(--accent);
+    background: rgba(23, 44, 97, 0.35);
+    border-color: var(--warning);
 }
 
 .lot-card.disabled {
@@ -71,8 +71,8 @@ h1 {
     margin-top: 10px;
     padding: 4px 8px;
     border-radius: 5px;
-    background: #dbeafe;
-    color: #1e40af;
+    background: rgba(242, 182, 5, 0.12);
+    color: var(--warning);
     font-size: 0.75rem;
     font-weight: 800;
 }
@@ -81,8 +81,8 @@ h1 {
     margin-top: 12px;
     border: 0;
     border-radius: 7px;
-    background: var(--accent);
-    color: white;
+    background: var(--highlight);
+    color: #fff;
     padding: 8px 11px;
     font-weight: 700;
 }
@@ -91,10 +91,13 @@ h1 {
     margin-top: 18px;
     box-shadow: none;
     padding: 16px;
+    background: linear-gradient(180deg, rgba(8, 16, 29, 0.96) 0%, rgba(13, 24, 48, 0.98) 100%);
+    border: 1px solid var(--border);
 }
 
 .pix-key {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
@@ -102,7 +105,7 @@ h1 {
     padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 10px;
-    background: #f8fafc;
+    background: rgba(9, 20, 38, 0.96);
 }
 
 .pix-key span {
@@ -122,7 +125,7 @@ h1 {
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
-    color: #16a34a;
+    color: #8adfa0;
     font-size: 0.84rem;
     font-weight: 700;
 }
@@ -133,8 +136,8 @@ h1 {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #16a34a;
-    color: white;
+    background: linear-gradient(135deg, #2fbf71 0%, #1d8f59 100%);
+    color: #071425;
     font-size: 0.7rem;
     line-height: 1;
 }
@@ -162,6 +165,7 @@ h1 {
     padding: 0;
     border: 0;
     box-shadow: none;
+    background-color: transparent;
 }
 
 .form-card fieldset {
@@ -178,13 +182,13 @@ h1 {
 }
 
 .invalid-label {
-    color: #dc2626;
+    color: var(--danger);
     font-weight: 700;
 }
 
 input.invalid-field {
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.12);
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 1px rgba(197, 26, 32, 0.2);
 }
 
 input[type='file'].invalid-field {
@@ -222,7 +226,7 @@ input[type='file'].invalid-field {
     width: 16px;
     height: 16px;
     min-height: auto;
-    accent-color: var(--accent);
+    accent-color: var(--highlight);
     cursor: pointer;
 }
 
@@ -242,15 +246,15 @@ input[type='file']::file-selector-button {
     padding: 9px 14px;
     border: 0;
     border-radius: 8px;
-    background: #dbeafe;
-    color: #1e40af;
+    background: var(--warning);
+    color: var(--accent);
     font-weight: 700;
     font-size: 12px;
     cursor: pointer;
 }
 
 .asterisk {
-    color: #dc2626;
+    color: var(--danger);
     font-weight: 700;
 }
 
@@ -267,9 +271,9 @@ input[type='file']::file-selector-button {
 .sold-out-state {
     padding: 28px 18px;
     border-radius: 12px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
+    background: rgba(197, 26, 32, 0.1);
+    border: 1px solid rgba(197, 26, 32, 0.3);
+    color: var(--danger);
     text-align: center;
     font-weight: 700;
 }
@@ -277,15 +281,24 @@ input[type='file']::file-selector-button {
 .success-card {
     padding: 28px;
     border-radius: var(--radius);
-    background: var(--success-bg);
-    color: var(--success);
+    background: linear-gradient(180deg, rgba(9, 20, 38, 0.96) 0%, rgba(13, 24, 48, 0.98) 100%);
+    color: #9ae7b0;
     text-align: center;
+    border: 1px solid rgba(72, 193, 117, 0.4);
+    box-shadow: 0 10px 24px rgba(34, 197, 94, 0.08);
 
     h2 {
         margin-top: 18px;
     }
 
     .success-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2fbf71 0%, #1d8f59 100%);
+        color: #071425;
         font-weight: 700;
         font-size: 24px;
     }
@@ -308,7 +321,7 @@ input[type='file']::file-selector-button {
 
 .error {
     margin: 16px 0 0 0;
-    color: #dc2626;
+    color: var(--danger);
     font-size: 13px;
     font-weight: 700;
     text-align: center;

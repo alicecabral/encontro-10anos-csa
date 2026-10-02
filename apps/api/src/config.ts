@@ -1,5 +1,11 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'node:path';
 import { z } from 'zod';
+
+// The backend scripts run with apps/api as their working directory. Load the
+// project-wide .env first so local development has a single source of secrets.
+dotenv.config({ path: path.resolve(process.cwd(), '../../.env'), override: true });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const env = z
   .object({

@@ -18,17 +18,17 @@ const years = [
   [31, 60],
   [61, 90],
 ];
-const lotPrices = [220, 230, 240];
-const lotCapacity = 2;
+const lotPrices = [200, 220, 240];
+const lotCapacities = [40, 40, 43];
 
 for (const [i, r] of years.entries())
   await prisma.lot.upsert({
     where: { displayOrder: i + 1 },
-    update: { price: lotPrices[i], quantityLimit: lotCapacity },
+    update: { price: lotPrices[i], quantityLimit: lotCapacities[i] },
     create: {
       name: `${i + 1}º Lote`,
       price: lotPrices[i],
-      quantityLimit: lotCapacity,
+      quantityLimit: lotCapacities[i],
       startDate: new Date(now.getTime() + r[0] * 864e5),
       endDate: new Date(now.getTime() + r[1] * 864e5),
       active: true,

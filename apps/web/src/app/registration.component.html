@@ -73,10 +73,13 @@
                 </div>
                 <form [formGroup]="form" (ngSubmit)="submit()">
                     <fieldset>
-                        <label [class.invalid-label]="isFieldInvalid('name')">Nome <span
-                                class="asterisk">*</span></label><input [class.invalid-field]="isFieldInvalid('name')"
-                            formControlName="name" placeholder="Nome completo" /><label
-                            [class.invalid-label]="isFieldInvalid('phone')">Telefone
+                        <label [class.invalid-label]="isFieldInvalid('firstName')">Nome <span
+                                class="asterisk">*</span></label><input
+                            [class.invalid-field]="isFieldInvalid('firstName')" formControlName="firstName"
+                            placeholder="Nome" /><label [class.invalid-label]="isFieldInvalid('lastName')">Sobrenome
+                            <span class="asterisk">*</span></label><input
+                            [class.invalid-field]="isFieldInvalid('lastName')" formControlName="lastName"
+                            placeholder="Sobrenome" /><label [class.invalid-label]="isFieldInvalid('phone')">Telefone
                             <span class="asterisk">*</span>
                         </label><input [class.invalid-field]="isFieldInvalid('phone')" formControlName="phone"
                             (input)="maskPhone()" placeholder="(00) 00000-0000" /><label
@@ -85,18 +88,12 @@
                             [class.invalid-field]="isFieldInvalid('email')" formControlName="email"
                             placeholder="voce@exemplo.com" /><label
                             [class.invalid-label]="isFieldInvalid('graduatedFromSchool')">Você se formou no Santo
-                            Antônio? <span class="asterisk">*</span></label>
+                            Antônio em 2016? <span class="asterisk">*</span></label>
                         <div class="radio-row" [class.invalid-group]="isFieldInvalid('graduatedFromSchool')">
                             <label><input type="radio" value="true"
                                     formControlName="graduatedFromSchool" />Sim</label><label><input type="radio"
                                     value="false" formControlName="graduatedFromSchool" />Não</label>
                         </div>
-                        @if (form.value.graduatedFromSchool === 'true') {
-                        <label [class.invalid-label]="isFieldInvalid('graduationYear')">Em qual ano você se formou?
-                            <span class="asterisk">*</span></label><input type="number"
-                            [class.invalid-field]="isFieldInvalid('graduationYear')" formControlName="graduationYear"
-                            placeholder="Ex.: 2016" />
-                        }
                         <label [class.invalid-label]="isFileInvalid()">Comprovante de pagamento <span
                                 class="asterisk">*</span></label><input type="file"
                             [class.invalid-field]="isFileInvalid()"
@@ -116,8 +113,9 @@
         } @else {
         <section class="success-card">
             <div class="success-icon">✓</div>
-            <h2>Presença confirmada!</h2>
-            <p>Seu comprovante foi recebido e será analisado pela nossa equipe.</p>
+            <h2>Sua presença será confirmada por email!</h2>
+            <p>Seu comprovante foi recebido e será analisado pela nossa equipe. Você receberá um email de confirmação em
+                até 1 semana do envio do formulário.</p>
             <p>
                 <strong>{{ success.registration.lot.name }}</strong> ·
                 {{ success.registration.amountPaid | currency: 'BRL' }}

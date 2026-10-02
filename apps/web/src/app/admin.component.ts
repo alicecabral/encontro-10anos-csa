@@ -12,6 +12,9 @@ export class AdminComponent {
   api = inject(Api);
   dashboard: any;
   registrations: any[] = [];
+  updatingRegistrationIds = new Set<string>();
+  reviewError = '';
+  reviewConfirmation: { id: string; name: string; status: 'CONFIRMED' | 'REJECTED' } | null = null;
 
   constructor() {
     this.api.dashboard().subscribe({
@@ -28,5 +31,33 @@ export class AdminComponent {
       error: () =>
         window.open(`http://localhost:3000/api/admin/registrations/${id}/proof`, '_blank'),
     });
+  }
+
+  reviewRegistration(id: string, status: 'CONFIRMED' | 'REJECTED') {
+    this.reviewError = '';
+    this.updatingRegistrationIds.add(id);
+    this.api.reviewRegistration(id, status).subscribe({
+      next: () => window.location.reload(),
+      error: () => {
+        this.updatingRegistrationIds.delete(id);
+        this.reviewError = 'Não foi possível salvar a análise. Tente novamente.';
+      },
+    });
+  }
+
+  requestReviewConfirmation(registration: any, status: 'CONFIRMED' | 'REJECTED') {
+    this.reviewConfirmation = { id: registration.id, name: registration.name, status };
+  }
+
+  cancelReviewConfirmation() {
+    this.reviewConfirmation = null;
+  }
+
+  confirmReview() {
+    const confirmation = this.reviewConfirmation;
+    if (!confirmation) return;
+
+    this.reviewConfirmation = null;
+    this.reviewRegistration(confirmation.id, confirmation.status);
   }
 }

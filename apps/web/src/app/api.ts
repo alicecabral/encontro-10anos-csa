@@ -24,6 +24,13 @@ export class Api {
   registrations() {
     return this.http.get<any>(`${environment.api}/admin/registrations`, { withCredentials: true });
   }
+  reviewRegistration(id: string, status: 'CONFIRMED' | 'REJECTED') {
+    return this.http.patch<any>(
+      `${environment.api}/admin/registrations/${id}/review`,
+      { status },
+      { withCredentials: true },
+    );
+  }
   proof(id: string) {
     return this.http.get<any>(`${environment.api}/admin/registrations/${id}/proof`, {
       withCredentials: true,

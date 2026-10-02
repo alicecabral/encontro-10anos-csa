@@ -1,16 +1,16 @@
 @if (event$ | async; as event) {
 <header class="site-header">
     <nav class="container nav">
-        <a routerLink="/" class="brand">ENCONTRO • 10 ANOS</a>
+        <a routerLink="/" class="brand">• 10 ANOS DE CSA •</a>
         <div class="nav-links">
-            <a href="#evento">O evento</a><a href="#programacao">Programação</a><a href="#pagamento">Pagamento</a>
+            <a href="#evento">O evento</a><a href="#pagamento">Pagamento</a>
         </div>
     </nav>
 </header>
 <main>
     <section class="hero">
         <div class="container hero-content">
-            <div class="eyebrow">Uma noite para relembrar!</div>
+            <div class="eyebrow">Bora celebrar nossos 10 anos!</div>
             <h1>{{ event.eventName }}</h1>
             <p>{{ event.eventSubtitle }}</p>
             <div class="hero-meta">
@@ -24,43 +24,30 @@
         <div class="container">
             <div class="section-heading">
                 <div class="eyebrow">Sobre a festa</div>
-                <h2>Uma noite para celebrar nossa história</h2>
+                <h2>Bora celebrar nossos 10 anos!</h2>
                 <p>{{ event.description }}</p>
             </div>
-            <div class="grid-3">
+            <div class="grid-2">
                 <article class="card info-card">
                     <div class="icon-box">📍</div>
                     <h3>Local</h3>
                     <p>{{ event.venue }}<br />{{ event.address }}</p>
                 </article>
                 <article class="card info-card">
-                    <div class="icon-box">👔</div>
-                    <h3>Dress code</h3>
-                    <p>{{ event.dressCode }}</p>
+                    <div class="icon-box">🍻</div>
+                    <h3>Bebidas e Alimentação</h3>
+                    <p>Open bar de Chopp, Xeque Mate e refrigerante, junto com um churrasco daqueles!</p>
+                </article>
+                <article class="card info-card">
+                    <div class="icon-box">🎧</div>
+                    <h3>Música</h3>
+                    <p>A festa será embalada por um DJ.</p>
                 </article>
                 <article class="card info-card">
                     <div class="icon-box">🎟️</div>
                     <h3>Convite individual</h3>
                     <p>O ingresso é individual e a confirmação é feita após o envio do formulário.</p>
                 </article>
-            </div>
-        </div>
-    </section>
-    <section class="section" id="programacao">
-        <div class="container">
-            <div class="section-heading">
-                <div class="eyebrow">Programação</div>
-                <h2>O que está planejado</h2>
-            </div>
-            <div class="schedule">
-                @for (item of event.schedule; track item.title) {
-                <div class="schedule-item">
-                    <strong class="schedule-time">{{ item.time }}</strong>
-                    <div>
-                        <strong>{{ item.title }}</strong>
-                    </div>
-                </div>
-                }
             </div>
         </div>
     </section>
@@ -102,6 +89,6 @@
     </section>
 </main>
 <footer>
-    <div class="container">{{ event.eventName }} • Encontro de 10 anos</div>
+    <div class="container">{{ event.eventName }} • Encontro de 10 anos de formados</div>
 </footer>
 }

@@ -60,4 +60,17 @@ export class AdminComponent {
     this.reviewConfirmation = null;
     this.reviewRegistration(confirmation.id, confirmation.status);
   }
+
+  logout() {
+    this.api.logout().subscribe({
+      next: () => {
+        sessionStorage.removeItem('admin_token');
+        location.href = '/admin/login';
+      },
+      error: () => {
+        sessionStorage.removeItem('admin_token');
+        location.href = '/admin/login';
+      },
+    });
+  }
 }

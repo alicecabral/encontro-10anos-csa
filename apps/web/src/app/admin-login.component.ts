@@ -19,7 +19,10 @@ export class AdminLoginComponent {
 
   go() {
     this.api.login({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigateByUrl('/admin'),
+      next: ({ token }) => {
+        sessionStorage.setItem('admin_token', token);
+        this.router.navigateByUrl('/admin');
+      },
       error: () => (this.error = 'Email ou senha inválidos.'),
     });
   }

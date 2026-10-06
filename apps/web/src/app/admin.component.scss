@@ -23,6 +23,48 @@
     margin-bottom: 24px;
 }
 
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-actions .export-button {
+    width: auto;
+    max-width: none;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.88rem;
+}
+
+.admin-actions .logout-button {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(23, 44, 97, 0.7);
+    color: var(--primary);
+}
+
+.admin-actions .logout-button:hover {
+    border-color: rgba(242, 182, 5, 0.5);
+    background: linear-gradient(135deg, #1b336b 0%, #274987 100%);
+}
+
+.admin-actions .logout-button:focus-visible {
+    outline: 2px solid var(--warning);
+    outline-offset: 2px;
+}
+
+.admin-actions .logout-button svg {
+    width: 20px;
+    height: 20px;
+}
+
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -291,5 +333,10 @@ button {
     .admin-toolbar {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .admin-actions {
+        align-self: flex-end;
+        margin-top: -8px;
     }
 }

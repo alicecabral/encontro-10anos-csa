@@ -211,6 +211,7 @@ textarea::placeholder {
   background: linear-gradient(135deg, var(--accent) 0%, #243d79 100%);
   color: var(--primary);
   border-color: rgba(235, 235, 235, 0.18);
+  box-shadow: none;
 }
 .button.secondary:hover {
   background: linear-gradient(135deg, #1b336b 0%, #274987 100%);

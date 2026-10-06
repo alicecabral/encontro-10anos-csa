@@ -22,6 +22,7 @@ import fs from 'node:fs/promises';
 import env from './config.js';
 import { eventConfig } from './event.js';
 import { sendReviewConfirmationEmail } from './email.js';
+import { auth } from './auth.js';
 import {
   LOT_CAPACITIES,
   TOTAL_TICKET_LIMIT,
@@ -70,14 +71,6 @@ const upload = multer({
   fileFilter: (_, file, cb) =>
     cb(null, safeTypes.has(file.mimetype) && !/[\\/]/.test(file.originalname)),
 });
-const auth = (req: any, res: any, next: any) => {
-  try {
-    req.admin = jwt.verify(req.cookies.admin_token, env.JWT_SECRET);
-    next();
-  } catch {
-    res.status(401).json({ message: 'Autenticação necessária.' });
-  }
-};
 const getSpotsUntilNextLot = (lots: any[], totalSold: number) => {
   if (totalSold >= TOTAL_TICKET_LIMIT) return 0;
   const currentLot = lots.find((lot) => isLotAvailableByRelease(lot, totalSold));
@@ -213,24 +206,15 @@ app.post('/api/admin/login', async (req, res, next) => {
     const admin = await prisma.admin.findUnique({ where: { email: email.toLowerCase() } });
     if (!admin || !(await bcrypt.compare(password, admin.passwordHash)))
       return res.status(401).json({ message: 'Email ou senha inválidos.' });
-    res
-      .cookie(
-        'admin_token',
-        jwt.sign({ id: admin.id, email: admin.email }, env.JWT_SECRET, { expiresIn: '8h' }),
-        {
-          httpOnly: true,
-          sameSite: 'none',
-          secure: true,
-          maxAge: 288e5,
-        },
-      )
-      .json({ email: admin.email });
+    const token = jwt.sign({ id: admin.id, email: admin.email }, env.JWT_SECRET, {
+      expiresIn: '8h',
+    });
+    res.json({ email: admin.email, token });
   } catch (error) {
     next(error);
   }
 });
 app.post('/api/admin/logout', (_, res) => {
-  res.clearCookie('admin_token');
   res.status(204).end();
 });
 app.get('/api/admin/me', auth, (req: any, res) => res.json({ email: req.admin.email }));
@@ -289,12 +273,13 @@ app.get('/api/admin/registrations', auth, async (req, res) => {
 app.patch('/api/admin/registrations/:id/review', auth, async (req, res, next) => {
   try {
     const { status } = z.object({ status: z.enum(['CONFIRMED', 'REJECTED']) }).parse(req.body);
+    const id = z.string().uuid().parse(req.params.id);
     const result = await prisma.$transaction(async (tx) => {
       const changed = await tx.registration.updateMany({
-        where: { id: req.params.id, reviewStatus: 'PENDING' },
+        where: { id, reviewStatus: 'PENDING' },
         data: { reviewStatus: status },
       });
-      const registration = await tx.registration.findUnique({ where: { id: req.params.id } });
+      const registration = await tx.registration.findUnique({ where: { id } });
 
       if (changed.count && status === 'REJECTED' && registration) {
         await tx.lot.update({
@@ -359,7 +344,8 @@ app.get('/api/admin/registrations/export', auth, async (_, res) => {
 });
 app.get('/api/admin/registrations/:id/proof', auth, async (req, res, next) => {
   try {
-    const registration = await prisma.registration.findUnique({ where: { id: req.params.id } });
+    const id = z.string().uuid().parse(req.params.id);
+    const registration = await prisma.registration.findUnique({ where: { id } });
     if (!registration) return res.status(404).json({ message: 'Inscrição não encontrada.' });
     if (r2) {
       const url = await getSignedUrl(

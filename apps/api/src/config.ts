@@ -21,10 +21,7 @@ const env = z
     R2_SECRET_ACCESS_KEY: z.string().optional(),
     R2_BUCKET_NAME: z.string().optional(),
     R2_ENDPOINT: z.string().optional(),
-    SMTP_HOST: z.string().optional(),
-    SMTP_PORT: z.coerce.number().optional(),
-    SMTP_USER: z.string().optional(),
-    SMTP_PASSWORD: z.string().optional(),
+    RESEND_API_KEY: z.string().min(1).optional(),
     EMAIL_FROM: z.string().optional(),
   })
   .parse(process.env);

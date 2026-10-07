@@ -28,11 +28,25 @@
 }
 
 .hero {
+    position: relative;
+    isolation: isolate;
     padding: 64px 0 32px;
     background: linear-gradient(180deg, #132550 0%, #0d1832 48%, #071425 100%);
 }
 
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url("../assets/csa10anos_frei.png") center 35% / auto 100% no-repeat;
+    opacity: 0.12;
+    pointer-events: none;
+}
+
 .hero-content {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -21,7 +21,7 @@ Crie um bucket privado no Cloudflare R2, gere uma API token com acesso limitado 
 
 ## Produção e segurança
 
-Use HTTPS, `NODE_ENV=production`, um `JWT_SECRET` longo e `CORS_ORIGIN` do domínio final. Configure SMTP opcionalmente; a inscrição não depende de email. Uploads aceitam JPEG/PNG/WEBP/GIF/PDF e respeitam `MAX_UPLOAD_SIZE` (50 MB padrão). Senhas são hash bcrypt e o cookie de administração é HTTP-only.
+Use HTTPS, `NODE_ENV=production`, um `JWT_SECRET` longo e `CORS_ORIGIN` do domínio final. Configure `RESEND_API_KEY` e `EMAIL_FROM` para enviar o email de confirmação com o ingresso e a imagem inline; a confirmação por email é opcional. Mantenha `apps/api/assets/csa10anos_frei.png` junto à API. Uploads aceitam JPEG/PNG/WEBP/GIF/PDF e respeitam `MAX_UPLOAD_SIZE` (50 MB padrão). Senhas são hash bcrypt e o cookie de administração é HTTP-only.
 
 ## Verificação
 

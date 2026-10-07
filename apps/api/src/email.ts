@@ -48,7 +48,7 @@ export async function sendReviewConfirmationEmail(registration: {
           <style>
             :root { color-scheme: light only; supported-color-schemes: light; }
             @media (prefers-color-scheme: dark) {
-              .email-page { background:#f2f0e9 !important; color:#171717 !important; }
+              .email-page { color:#171717 !important; }
               .email-card { background:#ffffff !important; }
               .email-title { color:#c51a20 !important; }
               .email-accent { color:#172c61 !important; }
@@ -59,8 +59,10 @@ export async function sendReviewConfirmationEmail(registration: {
             }
           </style>
         </head>
-        <body class="email-page" bgcolor="#f2f0e9" style="margin:0;padding:0;background:#f2f0e9;color:#171717">
-        <div class="email-page" style="margin:0;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;color:#171717;background:#f2f0e9">
+        <body class="body email-page" bgcolor="#f2f0e9" style="margin:0;padding:0;color:#171717">
+        <div class="gmail-blend-screen">
+        <div class="gmail-blend-difference">
+        <div class="email-page" style="margin:0;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;color:#171717;">
           <table class="email-card" role="presentation" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;margin:0 auto;background:#fff;border:1px solid #f2b605;border-radius:16px;overflow:hidden">
             <tr>
               <td style="padding:0">
@@ -98,6 +100,8 @@ export async function sendReviewConfirmationEmail(registration: {
             </tr>
           </table>
           <p class="email-muted" style="margin:18px auto 0;max-width:600px;text-align:center;color:#777;font-size:12px">${eventName} • Bora celebrar!</p>
+        </div>
+        </div>
         </div>
         </body>
       </html>

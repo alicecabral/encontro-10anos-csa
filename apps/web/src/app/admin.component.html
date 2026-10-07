@@ -6,11 +6,12 @@
             <p class="muted">Acompanhe as inscrições e os comprovantes recebidos.</p>
         </div>
         <div class="admin-actions">
-            <a class="button secondary export-button" href="http://localhost:3000/api/admin/registrations/export">Exportar CSV</a>
+            <a class="button secondary export-button"
+                href="http://localhost:3000/api/admin/registrations/export">Exportar CSV</a>
             <button class="logout-button" type="button" (click)="logout()" aria-label="Sair" title="Sair">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 17l5-5-5-5M15 12H3m9-8h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M10 17l5-5-5-5M15 12H3m9-8h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
         </div>
@@ -79,7 +80,7 @@
                             @if (!(r.graduatedFromSchool && r.graduationYear === 2016)) {
                             <span class="participant-warning" role="img"
                                 aria-label="Atenção: participante não é do terceiro ano de 2016"
-                                title="Participante não é do terceiro ano de 2016">⚠</span>
+                                title="Participante não é do 3º ano 2016">⚠</span>
                             }
                         </div>
                         } @else if (r.reviewStatus === 'CONFIRMED') {
@@ -100,7 +101,8 @@
             (click)="$event.stopPropagation()" (keydown.escape)="cancelReviewConfirmation()">
             <h2 id="review-dialog-title">Revisar comprovante</h2>
             @if (reviewConfirmation.status === 'CONFIRMED') {
-            <p>Deseja confirmar a presença de {{ reviewConfirmation.name }} na festa?</p>
+            <p>Deseja confirmar a presença de {{ reviewConfirmation.name }} na festa e enviar o e-mail de confirmação?
+            </p>
             } @else {
             <p>Deseja rejeitar o comprovante de {{ reviewConfirmation.name }}?</p>
             }

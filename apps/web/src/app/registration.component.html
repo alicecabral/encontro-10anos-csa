@@ -5,9 +5,13 @@
                 <a routerLink="/" class="back-link">← Voltar para o evento</a>
                 <div class="eyebrow checkout-eyebrow">Pagamento e confirmação</div>
                 <h1>Confirme sua presença</h1>
-                <p class="muted">Selecione um ingresso, realize o pagamento e depois envie o formulário.</p>
+                <p class="muted">Faça o pagamento via PIX do valor do lote vigente e envie o formulário com o
+                    comprovante.</p>
             </div>
-            <div class="pill">1 ingresso por pessoa</div>
+            <div class="badge-row">
+                <div class="pill">1 ingresso por pessoa</div>
+                <div class="pill pill-exclusive">Exclusivo para alunos do 3º ano 2016 CSA</div>
+            </div>
         </div>
         @if (!success) {
         <div class="checkout-grid">
@@ -57,7 +61,7 @@
                         <span>Chave PIX copiada</span>
                     </div>
                     }
-                    <p class="muted">Pague antes de preencher o formulário.</p>
+                    <p class="muted">Faça o PIX antes de enviar o formulário.</p>
                 </aside>
                 }
             </section>
@@ -69,7 +73,7 @@
                 </div>
                 } @else {
                 <div class="notice">
-                    Depois de realizar o PIX, preencha todos os campos e anexe o comprovante.
+                    Depois do pagamento, preencha todos os campos e anexe o comprovante para análise da organização.
                 </div>
                 <form [formGroup]="form" (ngSubmit)="submit()">
                     <fieldset>
@@ -103,7 +107,7 @@
                         <p class="error">{{ error }}</p>
                         }
                         <button class="button full submit-button" [disabled]="sending">
-                            {{ sending ? 'Enviando…' : 'Enviar confirmação' }}
+                            {{ sending ? 'Enviando…' : 'Enviar' }}
                         </button>
                     </fieldset>
                 </form>
@@ -113,9 +117,9 @@
         } @else {
         <section class="success-card">
             <div class="success-icon">✓</div>
-            <h2>Sua presença será confirmada por email!</h2>
-            <p>Seu comprovante foi recebido e será analisado pela nossa equipe. Você receberá um email de confirmação em
-                até 1 semana do envio do formulário.</p>
+            <h2>Formulário enviado!</h2>
+            <p>Seu comprovante foi recebido e será analisado pela organização.</p>
+            <p>Você receberá um e-mail <strong>em até 3 dias úteis</strong> confirmando a sua presença!</p>
             <p>
                 <strong>{{ success.registration.lot.name }}</strong> ·
                 {{ success.registration.amountPaid | currency: 'BRL' }}

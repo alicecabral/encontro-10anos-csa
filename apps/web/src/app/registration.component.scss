@@ -6,7 +6,34 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 16px;
     margin-bottom: 28px;
+}
+
+.badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(23, 44, 97, 0.35);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.pill-exclusive {
+    background: rgba(197, 26, 32, 0.12);
+    border-color: #c51a20;
+    color: #fff;
 }
 
 .back-link {

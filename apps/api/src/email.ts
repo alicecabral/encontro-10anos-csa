@@ -45,25 +45,12 @@ export async function sendReviewConfirmationEmail(registration: {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <meta name="color-scheme" content="light">
           <meta name="supported-color-schemes" content="light">
-          <style>
-            :root { color-scheme: light only; supported-color-schemes: light; }
-            @media (prefers-color-scheme: dark) {
-              .email-page { color:#171717 !important; }
-              .email-card { background:#ffffff !important; }
-              .email-title { color:#c51a20 !important; }
-              .email-accent { color:#172c61 !important; }
-              .email-copy { color:#555555 !important; }
-              .email-muted { color:#777777 !important; }
-              .email-label { background:#172c61 !important; color:#f2b605 !important; }
-              .email-rule { border-color:#5555553d !important; }
-            }
-          </style>
         </head>
-        <body class="body email-page" bgcolor="#f2f0e9" style="margin:0;padding:0;color:#171717">
+        <body class="body email-page" bgcolor="#ffffff" style="margin:0;padding:0;color:#000000">
         <div class="gmail-blend-screen">
         <div class="gmail-blend-difference">
-        <div class="email-page" style="margin:0;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;color:#171717;">
-          <table class="email-card" role="presentation" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;margin:0 auto;background:#fff;border:1px solid #f2b605;border-radius:16px;overflow:hidden">
+        <div class="email-page" style="margin:0;padding:32px 12px;font-family:Arial,Helvetica,sans-serif;color:#000000;">
+          <table class="email-card" role="presentation" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #000000;border-radius:16px;overflow:hidden">
             <tr>
               <td style="padding:0">
                 <img src="cid:csa10anos" alt="Ilustração comemorativa dos 10 anos de CSA" style="display:block;width:auto;height:200px;margin:0 auto;">
@@ -71,35 +58,35 @@ export async function sendReviewConfirmationEmail(registration: {
             </tr>
             <tr>
               <td style="padding:0 32px 10px">
-                <p class="email-label" style="display:block;margin:0 auto 14px;padding:7px 10px;border-radius:4px;background:#172c61;color:#f2b605;font-size:12px;font-weight:bold;letter-spacing:2px;text-align:center">INGRESSO • PRESENÇA CONFIRMADA</p>
-                <h1 class="email-title" style="margin:0;color:#c51a20;font-size:30px;line-height:1.15;font-weight:800;text-align:center">${eventName}</h1>
-                <p class="email-copy" style="margin:12px 0 0;color:#555;font-size:16px;text-align:center">Olá, ${name}! Seu comprovante de pagamento foi analisado e confirmado pela organização. <strong>Seu lugar na festa está garantido!</strong></p>
+                <p class="email-label" style="display:block;margin:0 auto 14px;padding:7px 10px;border-radius:4px;background:#000000;color:#ffffff;font-size:12px;font-weight:bold;letter-spacing:2px;text-align:center">INGRESSO • PRESENÇA CONFIRMADA</p>
+                <h1 class="email-title" style="margin:0;color:#000000;font-size:30px;line-height:1.15;font-weight:800;text-align:center">${eventName}</h1>
+                <p class="email-copy" style="margin:12px 0 0;color:#000000;font-size:16px;text-align:center">Olá, ${name}! Seu comprovante de pagamento foi analisado e confirmado pela organização. <strong>Seu lugar na festa está garantido!</strong></p>
               </td>
             </tr>
             <tr>
               <td style="padding:20px 32px 28px">
-                <table class="email-rule" role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px dashed #5555553d;border-bottom:1px dashed #5555553d">
+                <table class="email-rule" role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px dashed #000000;border-bottom:1px dashed #000000">
                   <tr>
                     <td style="padding:18px 0 10px;font-size:12px;font-weight:bold;letter-spacing:1px">DATA E HORÁRIO</td>
                   </tr>
                   <tr>
-                    <td class="email-accent" style="padding:0 0 18px;color:#172c61;font-size:18px;font-weight:bold">${eventDate} • ${eventTime}</td>
+                    <td class="email-accent" style="padding:0 0 18px;color:#000000;font-size:18px;font-weight:bold">${eventDate} • ${eventTime}</td>
                   </tr>
                   <tr>
                     <td style="padding:0 0 8px;font-size:12px;font-weight:bold;letter-spacing:1px">LOCAL</td>
                   </tr>
                   <tr>
-                    <td class="email-accent" style="padding:0 0 5px;color:#172c61;font-size:18px;font-weight:bold">${venue}</td>
+                    <td class="email-accent" style="padding:0 0 5px;color:#000000;font-size:18px;font-weight:bold">${venue}</td>
                   </tr>
                   <tr>
                     <td style="padding:0 0 18px;font-size:14px;line-height:1.5">${address}</td>
                   </tr>
                 </table>
-                <p class="email-copy" style="margin:20px 0 0;color:#555;font-size:14px;line-height:1.5">Este ingresso é individual. Até lá!</p>
+                <p class="email-copy" style="margin:20px 0 0;color:#000000;font-size:14px;line-height:1.5">Este ingresso é individual. Até lá!</p>
               </td>
             </tr>
           </table>
-          <p class="email-muted" style="margin:18px auto 0;max-width:600px;text-align:center;color:#777;font-size:12px">${eventName} • Bora celebrar!</p>
+          <p class="email-muted" style="margin:18px auto 0;max-width:600px;text-align:center;color:#000000;font-size:12px">${eventName} • Encontro de 10 anos de formados</p>
         </div>
         </div>
         </div>

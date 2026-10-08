@@ -81,7 +81,7 @@ textarea::placeholder {
   color: var(--secondary);
 }
 .eyebrow {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -171,7 +171,7 @@ textarea::placeholder {
   background: rgba(23, 44, 97, 0.4);
   color: var(--primary);
   font-weight: 650;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
 }
 .button {
   display: inline-flex;

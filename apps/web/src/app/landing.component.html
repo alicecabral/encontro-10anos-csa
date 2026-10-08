@@ -3,20 +3,19 @@
     <nav class="container nav">
         <a routerLink="/" class="brand">• 10 ANOS DE CSA •</a>
         <div class="nav-links">
-            <a href="#evento">O evento</a><a href="#pagamento">Pagamento</a>
+            <a href="#evento">O evento</a><a href="#local">Local</a><a href="#pagamento">Pagamento</a>
         </div>
     </nav>
 </header>
 <main>
     <section class="hero">
         <div class="container hero-content">
-            <div class="eyebrow">Bora celebrar nossos 10 anos!</div>
-            <h1>{{ event.eventName }}</h1>
-            <p>{{ event.eventSubtitle }}</p>
+            <div class="eyebrow">AGORA É PRA VALER!</div>
+            <h1 style="margin:0 0 8px;">{{ event.eventName }}</h1>
             <div class="hero-meta">
                 <span class="pill">📅 {{ event.eventDate }}</span><span class="pill">🕖 {{ event.eventTime
-                    }}</span><a class="pill location-link" href="https://share.google/wrK5pV8HUc1MNCXN6" target="_blank"
-                    rel="noopener noreferrer">📍 {{ event.venue }}</a>
+                    }}</span><a class="pill location-link" href="https://maps.app.goo.gl/EXdfRKEiLXbPDFCA9"
+                    target="_blank" rel="noopener noreferrer">📍 {{ event.venue }}</a>
             </div>
             <a href="#pagamento" class="button">Confirmar presença</a>
         </div>
@@ -25,31 +24,53 @@
         <div class="container">
             <div class="section-heading">
                 <div class="eyebrow">Sobre a festa</div>
-                <h2>Bora celebrar nossos 10 anos!</h2>
+                <h2>Bora comemorar esses 10 anos!</h2>
                 <p>{{ event.description }}</p>
             </div>
             <div class="grid-2">
-                <a class="card info-card location-card" href="https://share.google/wrK5pV8HUc1MNCXN6" target="_blank"
-                    rel="noopener noreferrer">
-                    <div class="icon-box">📍</div>
-                    <h3>Local</h3>
-                    <p>{{ event.venue }}<br />{{ event.address }}</p>
-                </a>
                 <article class="card info-card">
                     <div class="icon-box">🍻</div>
-                    <h3>Bebidas e Alimentação</h3>
-                    <p>Open bar de Chopp, Xeque Mate e refrigerante, junto com um churrasco daqueles!</p>
+                    <h3>Comidas e Bebidas</h3>
+                    <p>Churrasco liberado e open bar!<br />Chopp, Xeque Mate, refrigerante e algumas surpresas para
+                        deixar a festa ainda melhor. </p>
                 </article>
                 <article class="card info-card">
                     <div class="icon-box">🎧</div>
                     <h3>Música</h3>
-                    <p>A festa será embalada por um DJ.</p>
+                    <p>Pagodinho, DJ e muita música boa para animar a noite!</p>
                 </article>
                 <article class="card info-card">
                     <div class="icon-box">🎟️</div>
                     <h3>Convite individual</h3>
-                    <p>O ingresso é individual e a confirmação é feita após o envio do formulário.</p>
+                    <p>A venda dos convites é, inicialmente, exclusiva para ex-alunos da turma de 2016.</p>
+                    <p
+                        style="margin-top: 0.75rem; padding: 0.75rem 1rem; border-left: 4px solid #f2b605; background: rgba(242, 182, 5, 0.12); border-radius: 0.5rem; color: #f2b605;font-size: 13px;">
+                        <strong>Observação:</strong> Devido à capacidade do espaço e à lotação prevista, os convites são
+                        individuais e não incluem
+                        acompanhantes. Isso poderá ser reavaliado posteriormente conforme a demanda.
+                    </p>
                 </article>
+            </div>
+        </div>
+    </section>
+    <section class="section location-section" id="local">
+        <div class="container">
+            <div class="section-heading">
+                <div class="eyebrow">local</div>
+                <h2>Onde vai ser?</h2>
+                <p>A festa será em um <strong>Rooftop</strong> charmoso na Savassi, com fácil acesso e vista
+                    privilegiada da Serra do
+                    Curral!</p>
+            </div>
+            <div class="location-map">
+                <iframe
+                    src="https://www.google.com/maps?q=R.%20Andaluzita%2C%20131%20-%20Savassi%2C%20Belo%20Horizonte&output=embed"
+                    title="Mapa do local da festa" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+                <a class="location-address" href="https://maps.app.goo.gl/EXdfRKEiLXbPDFCA9" target="_blank"
+                    rel="noopener noreferrer">
+                    📍 {{ event.address }} <span>Abrir no Google Maps ↗</span>
+                </a>
             </div>
         </div>
     </section>

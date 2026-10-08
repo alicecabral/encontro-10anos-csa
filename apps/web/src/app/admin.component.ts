@@ -13,7 +13,9 @@ export class AdminComponent {
   dashboard: any;
   registrations: any[] = [];
   updatingRegistrationIds = new Set<string>();
+  exporting = false;
   reviewError = '';
+  exportError = '';
   reviewConfirmation: { id: string; name: string; status: 'CONFIRMED' | 'REJECTED' } | null = null;
 
   constructor() {
@@ -30,6 +32,26 @@ export class AdminComponent {
         window.open(x.url || `http://localhost:3000/api/admin/registrations/${id}/proof`, '_blank'),
       error: () =>
         window.open(`http://localhost:3000/api/admin/registrations/${id}/proof`, '_blank'),
+    });
+  }
+
+  exportRegistrations() {
+    this.exportError = '';
+    this.exporting = true;
+    this.api.exportRegistrations().subscribe({
+      next: (csv) => {
+        const url = URL.createObjectURL(csv);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'inscricoes.csv';
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        this.exporting = false;
+      },
+      error: () => {
+        this.exporting = false;
+        this.exportError = 'Não foi possível exportar as inscrições. Tente novamente.';
+      },
     });
   }
 

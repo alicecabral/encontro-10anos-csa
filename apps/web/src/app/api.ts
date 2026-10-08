@@ -58,6 +58,12 @@ export class Api {
       headers: this.getAuthHeaders(),
     });
   }
+  exportRegistrations() {
+    return this.http.get(`${environment.api}/admin/registrations/export`, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob',
+    });
+  }
   reviewRegistration(id: string, status: 'CONFIRMED' | 'REJECTED') {
     return this.http.patch<any>(
       `${environment.api}/admin/registrations/${id}/review`,

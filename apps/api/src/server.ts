@@ -242,7 +242,7 @@ app.get('/api/admin/dashboard', auth, async (_, res) => {
 app.get('/api/admin/registrations', auth, async (req, res) => {
   const q = req.query as any,
     page = Math.max(1, Number(q.page) || 1),
-    limit = Math.min(100, Math.max(1, Number(q.limit) || 20));
+    limit = Math.min(200, Math.max(1, Number(q.limit) || 200));
   const where: any = { AND: [] };
   if (q.search)
     where.AND.push({
@@ -308,7 +308,14 @@ app.patch('/api/admin/registrations/:id/review', auth, async (req, res, next) =>
 });
 app.get('/api/admin/registrations/export', auth, async (_, res) => {
   const rows = await prisma.registration.findMany({
-    include: { lot: true },
+    select: {
+      name: true,
+      phone: true,
+      email: true,
+      reviewStatus: true,
+      amountPaid: true,
+      submittedAt: true,
+    },
     orderBy: { submittedAt: 'desc' },
   });
   res
@@ -317,27 +324,20 @@ app.get('/api/admin/registrations/export', auth, async (_, res) => {
     .send(
       stringify(
         rows.map((row) => [
-          row.id,
           row.name,
           row.phone,
           row.email,
-          row.graduatedFromSchool && row.graduationYear === 2016 ? 'Sim' : 'Não',
-          row.lot.name,
           Number(row.amountPaid),
           row.submittedAt.toISOString(),
+          row.reviewStatus === 'CONFIRMED'
+            ? 'Confirmado'
+            : row.reviewStatus === 'PENDING'
+              ? 'Pendente'
+              : 'Rejeitado',
         ]),
         {
           header: true,
-          columns: [
-            'ID',
-            'Nome',
-            'Telefone',
-            'Email',
-            'É do terceiro ano 2016?',
-            'Lote',
-            'Valor pago',
-            'Data de submissão',
-          ],
+          columns: ['Nome', 'Telefone', 'Email', 'Valor pago', 'Submissão', 'Status'],
         },
       ),
     );

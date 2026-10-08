@@ -10,7 +10,7 @@
             </div>
             <div class="badge-row">
                 <div class="pill">1 ingresso por pessoa</div>
-                <div class="pill pill-exclusive">Exclusivo para alunos do 3º ano 2016 CSA</div>
+                <div class="pill pill-exclusive">Exclusivo para ex-alunos da turma de 2016</div>
             </div>
         </div>
         @if (!success) {
@@ -118,11 +118,15 @@
         <section class="success-card">
             <div class="success-icon">✓</div>
             <h2>Formulário enviado!</h2>
-            <p>Seu comprovante foi recebido e será analisado pela organização.</p>
+            <p>Seu comprovante será analisado pela organização.</p>
             <p>Você receberá um e-mail <strong>em até 3 dias úteis</strong> confirmando a sua presença!</p>
             <p>
                 <strong>{{ success.registration.lot.name }}</strong> ·
                 {{ success.registration.amountPaid | currency: 'BRL' }}
+            </p>
+
+            <p style="margin-top: 32px;color: #c51a20;font-size: 15px;">
+                <strong>Lembre-se de conferir a pasta de spam do seu e-mail!</strong>
             </p>
         </section>
         }

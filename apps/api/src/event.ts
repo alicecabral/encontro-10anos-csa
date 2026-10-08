@@ -7,7 +7,7 @@ export const eventConfig = {
   venue: 'Rooftop do 24p7 CoNETworking',
   address: 'R. Andaluzita, 131 - Savassi, Belo Horizonte',
   description:
-    'Dez anos depois, é hora de reencontrar pessoas, relembrar histórias e celebrar tudo o que vivemos juntos.',
+    '10 anos de formados merecem uma boa festa, e a gente já está preparando tudo para reunir a galera e curtir muito.',
   pixKey: 'encontro.10anos.csa@gmail.com',
   pixCopyPaste: 'encontro.10anos.csa@gmail.com',
   pixQrCode: null as string | null,

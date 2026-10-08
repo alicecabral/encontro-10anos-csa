@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 
 export type ClassOf2016RosterEntry = {
   name: string;
@@ -43,15 +42,8 @@ export function parseClassOf2016Roster(contents: string): ClassOf2016RosterEntry
 }
 
 export async function loadClassOf2016Roster() {
-  const rosterPath = path.resolve(
-    process.cwd(),
-    '..',
-    'web',
-    'src',
-    'assets',
-    'terceiro_ano_2016.csv',
-  );
-  const contents = await readFile(rosterPath, 'utf8');
+  const rosterUrl = new URL('../assets/terceiro_ano_2016.csv', import.meta.url);
+  const contents = await readFile(rosterUrl, 'utf8');
   return parseClassOf2016Roster(contents);
 }
 

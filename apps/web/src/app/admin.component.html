@@ -48,8 +48,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Contato</th>
-                    <th>É do terceiro ano 2016?</th>
-                    <th>Lote</th>
+                    <th>Turma</th>
                     <th>Valor pago</th>
                     <th>Comprovante</th>
                     <th>Submissão</th>
@@ -66,31 +65,30 @@
                     <td>
                         {{ r.phone }}<br /><span>{{ r.email }}</span>
                     </td>
-                    <td>{{ r.graduatedFromSchool && r.graduationYear === 2016 ? 'Sim' : 'Não' }}</td>
-                    <td>{{ r.lot.name }}</td>
-                    <td>{{ r.amountPaid | currency: 'BRL' }}</td>
+                    <td>{{ r.classroom || '' }}</td>
+                    <td>{{ r.lot.name }}<br /><span>{{ r.amountPaid | currency: 'BRL' }}</span></td>
                     <td><button (click)="openProof(r.id)">Ver comprovante</button></td>
                     <td>{{ r.submittedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
                     <td class="review-cell">
-                        @if (r.reviewStatus === 'PENDING') {
                         <div class="review-actions">
+                            @if (r.reviewStatus === 'PENDING') {
                             <button class="review-button confirm" type="button" title="Confirmar comprovante"
                                 aria-label="Confirmar comprovante" [disabled]="updatingRegistrationIds.has(r.id)"
                                 (click)="requestReviewConfirmation(r, 'CONFIRMED')">✓</button>
                             <button class="review-button reject" type="button" title="Recusar comprovante"
                                 aria-label="Recusar comprovante" [disabled]="updatingRegistrationIds.has(r.id)"
                                 (click)="requestReviewConfirmation(r, 'REJECTED')">✕</button>
-                            @if (!(r.graduatedFromSchool && r.graduationYear === 2016)) {
+                            } @else if (r.reviewStatus === 'CONFIRMED') {
+                            <span class="review-label confirmed-label">✓ Confirmado</span>
+                            } @else {
+                            <span class="review-label rejected-label">✕ Recusado</span>
+                            }
+                            @if (!r.classroom) {
                             <span class="participant-warning" role="img"
                                 aria-label="Atenção: participante não é do terceiro ano de 2016"
                                 title="Participante não é do 3º ano 2016">⚠</span>
                             }
                         </div>
-                        } @else if (r.reviewStatus === 'CONFIRMED') {
-                        <span class="review-label confirmed-label">✓ Confirmado</span>
-                        } @else {
-                        <span class="review-label rejected-label">✕ Recusado</span>
-                        }
                     </td>
                 </tr>
                 }

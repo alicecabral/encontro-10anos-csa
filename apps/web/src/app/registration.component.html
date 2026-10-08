@@ -90,14 +90,7 @@
                             [class.invalid-label]="isFieldInvalid('email')">Email <span
                                 class="asterisk">*</span></label><input type="email"
                             [class.invalid-field]="isFieldInvalid('email')" formControlName="email"
-                            placeholder="voce@exemplo.com" /><label
-                            [class.invalid-label]="isFieldInvalid('graduatedFromSchool')">Você se formou no Santo
-                            Antônio em 2016? <span class="asterisk">*</span></label>
-                        <div class="radio-row" [class.invalid-group]="isFieldInvalid('graduatedFromSchool')">
-                            <label><input type="radio" value="true"
-                                    formControlName="graduatedFromSchool" />Sim</label><label><input type="radio"
-                                    value="false" formControlName="graduatedFromSchool" />Não</label>
-                        </div>
+                            placeholder="voce@exemplo.com" />
                         <label [class.invalid-label]="isFileInvalid()">Comprovante de pagamento <span
                                 class="asterisk">*</span></label><input type="file"
                             [class.invalid-field]="isFileInvalid()"

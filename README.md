@@ -13,7 +13,7 @@ Aplicação Angular + Express/TypeScript + PostgreSQL/Prisma para inscrições c
 
 ## Configuração do evento
 
-Edite `apps/api/src/event.ts` para textos, data, local, programação e PIX. Edite os lotes pelo banco/Prisma; o seed cria três lotes com preços `0` e períodos demonstrativos, portanto devem ser alterados antes de produção.
+Edite `apps/api/src/event.ts` para textos, data, local, programação e PIX. A API valida os participantes com `apps/web/src/assets/terceiro_ano_2016.csv`; mantenha esse arquivo disponível nesse caminho relativo ao workspace também no ambiente de produção. Edite os lotes pelo banco/Prisma; o seed cria três lotes com preços `0` e períodos demonstrativos, portanto devem ser alterados antes de produção.
 
 ## R2 privado
 

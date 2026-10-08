@@ -30,7 +30,6 @@ export class RegistrationComponent implements OnInit {
     lastName: ['', Validators.required],
     phone: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    graduatedFromSchool: ['', Validators.required],
   });
   getLotCapacity(lot: any) {
     return lot?.quantityLimit ?? 0;
@@ -88,7 +87,8 @@ export class RegistrationComponent implements OnInit {
     Object.entries(this.form.value).forEach(([key, value]) => {
       if (key !== 'firstName' && key !== 'lastName') data.append(key, value || '');
     });
-    data.append('name', `${this.form.value.firstName} ${this.form.value.lastName}`.trim());
+    data.append('firstName', this.form.value.firstName!.trim());
+    data.append('lastName', this.form.value.lastName!.trim());
     data.append('lotId', this.selected.id);
     data.append('proof', this.proof);
     this.api.register(data, crypto.randomUUID()).subscribe({

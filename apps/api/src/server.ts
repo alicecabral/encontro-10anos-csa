@@ -24,6 +24,12 @@ import { eventConfig } from './event.js';
 import { sendReviewConfirmationEmail } from './email.js';
 import { auth } from './auth.js';
 import {
+  findClassForParticipant,
+  findClassForStoredName,
+  loadClassOf2016Roster,
+  type ClassOf2016RosterEntry,
+} from './class-of-2016.js';
+import {
   LOT_CAPACITIES,
   TOTAL_TICKET_LIMIT,
   getLotCapacity,
@@ -33,6 +39,7 @@ import {
 
 const prisma = new PrismaClient();
 const app = express();
+let classOf2016Roster: ClassOf2016RosterEntry[] | null = null;
 const safeTypes = new Set([
   'image/jpeg',
   'image/png',
@@ -89,6 +96,10 @@ const serialize = (registration: any) => ({
     ? { ...registration.lot, price: Number(registration.lot.price) }
     : undefined,
 });
+const getClassOf2016Roster = () => {
+  if (!classOf2016Roster) throw new Error('A lista da turma de 2016 não foi carregada.');
+  return classOf2016Roster;
+};
 async function putFile(key: string, file: Express.Multer.File) {
   if (r2)
     return r2.send(
@@ -134,16 +145,25 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
   try {
     const data = z
       .object({
-        name: z.string().trim().min(3).max(120),
+        firstName: z.string().trim().min(1).max(60),
+        lastName: z.string().trim().min(1).max(60),
         phone: z.string().min(10).max(20),
         email: z.string().trim().email().max(254),
-        graduatedFromSchool: z.enum(['true', 'false']),
         lotId: z.string().uuid(),
+      })
+      .refine(({ firstName, lastName }) => `${firstName} ${lastName}`.length <= 120, {
+        path: ['lastName'],
       })
       .parse(req.body);
     if (!req.file || !safeTypes.has(req.file.mimetype))
       return res.status(400).json({ message: 'Envie um comprovante válido (imagem ou PDF).' });
-    const graduated = data.graduatedFromSchool === 'true';
+    const name = `${data.firstName} ${data.lastName}`.replace(/\s+/g, ' ').trim();
+    const classroom = findClassForParticipant(
+      data.firstName,
+      data.lastName,
+      getClassOf2016Roster(),
+    );
+    const graduated = classroom !== null;
     const lots = await prisma.lot.findMany({ orderBy: { displayOrder: 'asc' } });
     const totalSold = lots.reduce((sum, lot) => sum + lot.quantitySold, 0);
     if (totalSold >= TOTAL_TICKET_LIMIT)
@@ -169,7 +189,7 @@ app.post('/api/registrations', upload.single('proof'), async (req, res, next) =>
       }
       const created = await tx.registration.create({
         data: {
-          name: data.name.replace(/\s+/g, ' '),
+          name,
           phone: data.phone.replace(/\D/g, ''),
           email: data.email.toLowerCase(),
           graduatedFromSchool: graduated,
@@ -268,7 +288,16 @@ app.get('/api/admin/registrations', auth, async (req, res) => {
       take: limit,
     }),
   ]);
-  res.json({ items: items.map(serialize), total, page, limit });
+  const roster = getClassOf2016Roster();
+  res.json({
+    items: items.map((registration) => ({
+      ...serialize(registration),
+      classroom: findClassForStoredName(registration.name, roster),
+    })),
+    total,
+    page,
+    limit,
+  });
 });
 app.patch('/api/admin/registrations/:id/review', auth, async (req, res, next) => {
   try {
@@ -385,6 +414,7 @@ app.use((error: any, _req: any, res: any, _next: any) => {
 });
 
 const start = async () => {
+  classOf2016Roster = await loadClassOf2016Roster();
   await ensureAdminAccount();
   app.listen(env.PORT, () => {
     console.log(`API em http://localhost:${env.PORT}`);

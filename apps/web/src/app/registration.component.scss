@@ -63,13 +63,8 @@ h1 {
     cursor: default;
 }
 
-.lot-card.current {
-    border: 2px solid var(--warning);
-}
-
 .lot-card.selected {
     background: rgba(23, 44, 97, 0.35);
-    border-color: var(--warning);
 }
 
 .lot-card.disabled {

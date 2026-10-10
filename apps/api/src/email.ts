@@ -53,7 +53,7 @@ export async function sendReviewConfirmationEmail(registration: {
           <table class="email-card" role="presentation" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #000000;border-radius:16px;overflow:hidden">
             <tr>
               <td style="padding:0">
-                <img src="cid:csa10anos" alt="Ilustração comemorativa dos 10 anos de CSA" style="display:block;width:auto;height:200px;margin:0 auto;">
+                <img src="cid:csa10anos" alt="Ilustração comemorativa CSA 10 anos" style="display:block;width:auto;height:200px;margin:0 auto;">
               </td>
             </tr>
             <tr>

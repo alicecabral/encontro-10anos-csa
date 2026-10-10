@@ -10,15 +10,17 @@
             </div>
             <div class="badge-row">
                 <div class="pill">1 ingresso por pessoa</div>
-                <div class="pill pill-exclusive">Exclusivo para ex-alunos da turma de 2016</div>
+                <div class="pill pill-exclusive">Exclusivo para ex-alunos e funcionários do CSA</div>
             </div>
         </div>
         @if (!success) {
         <div class="checkout-grid">
             <section class="card">
-                <h2>Escolha seu lote</h2>
+                <h2>Ingressos disponíveis
+                </h2>
                 <div class="lot-list">
                     @for (lot of lots; track lot.id) {
+                    @if (lot.isCurrent) {
                     <article class="lot-card" [class.current]="lot.isCurrent" [class.selected]="selected?.id === lot.id"
                         [class.disabled]="!lot.isCurrent">
                         <div class="lot-top">
@@ -44,6 +46,7 @@
                         <span class="tag">LOTE ATUAL</span>
                         }
                     </article>
+                    }
                     }
                 </div>
                 @if (!soldOut) {

@@ -1,5 +1,5 @@
 export const eventConfig = {
-  eventName: '10 ANOS DE CSA',
+  eventName: 'CSA 10 ANOS',
   eventSubtitle: 'Bora celebrar esses 10 anos de formados!',
   classYear: '2016',
   eventDate: '14/11/2026',

@@ -1,4 +1,4 @@
-export const LOT_CAPACITIES = [50, 40, 33] as const;
+export const LOT_CAPACITIES = [120, 1, 1] as const;
 export const TOTAL_TICKET_LIMIT = LOT_CAPACITIES.reduce((sum, capacity) => sum + capacity, 0);
 
 export function getLotCapacity(displayOrder: number) {

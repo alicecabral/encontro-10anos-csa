@@ -47,11 +47,11 @@ describe('regras de inscrição', () => {
 
     expect(findClassForParticipant('Alice', 'Marques', roster)).toBe('3E');
   });
-  it('define os limites dos lotes como 50, 40 e 33 ingressos', () => {
-    expect(LOT_CAPACITIES).toEqual([50, 40, 33]);
-    expect(getLotCapacity(1)).toBe(50);
-    expect(getLotCapacity(2)).toBe(40);
-    expect(getLotCapacity(3)).toBe(33);
+  it('define os limites dos lotes como 120, 1 e 1 ingressos', () => {
+    expect(LOT_CAPACITIES).toEqual([120, 1, 1]);
+    expect(getLotCapacity(1)).toBe(120);
+    expect(getLotCapacity(2)).toBe(1);
+    expect(getLotCapacity(3)).toBe(1);
   });
   it('abre o lote correto conforme o total vendido', () => {
     expect(isLotAvailableByRelease({ active: true, displayOrder: 1, quantitySold: 0 }, 0)).toBe(

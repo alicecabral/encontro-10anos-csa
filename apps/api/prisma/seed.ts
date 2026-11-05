@@ -19,7 +19,7 @@ const years = [
   [61, 90],
 ];
 const lotPrices = [200, 220, 240];
-const lotCapacities = [120, 1, 1];
+const lotCapacities = [66, 50, 7];
 
 for (const [i, r] of years.entries())
   await prisma.lot.upsert({
